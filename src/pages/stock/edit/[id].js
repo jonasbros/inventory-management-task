@@ -21,6 +21,9 @@ export default function EditStock() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isRestockMode, setIsRestockMode] = useState(false);
+  const [originalQuantity, setOriginalQuantity] = useState(0);
+  const [restockAmount, setRestockAmount] = useState('');
 
   const router = useRouter();
   const { id } = router.query;
@@ -40,8 +43,33 @@ export default function EditStock() {
     }
   }, [id]);
 
+  // Handle restock mode based on query parameters
+  useEffect(() => {
+    if (router.isReady) {
+      const { restock, currentQuantity } = router.query;
+      
+      if (restock === 'true' && currentQuantity) {
+        setIsRestockMode(true);
+        setOriginalQuantity(parseInt(currentQuantity));
+      }
+    }
+  }, [router.isReady, router.query]);
+
   const handleChange = (e) => {
     setStock({ ...stock, [e.target.name]: e.target.value });
+  };
+
+  const handleRestockAmountChange = (e) => {
+    const amount = e.target.value;
+    setRestockAmount(amount);
+    
+    // Calculate new total quantity
+    if (amount && !isNaN(amount)) {
+      const newTotal = originalQuantity + parseInt(amount);
+      setStock(prevStock => ({ ...prevStock, quantity: newTotal.toString() }));
+    } else {
+      setStock(prevStock => ({ ...prevStock, quantity: originalQuantity.toString() }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -73,8 +101,18 @@ export default function EditStock() {
       <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Edit Stock Record
+            {isRestockMode ? 'Restock Inventory' : 'Edit Stock Record'}
           </Typography>
+          {isRestockMode && (
+            <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.50', borderRadius: 1, border: '1px solid', borderColor: 'primary.200' }}>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Current Stock:</strong> {originalQuantity} units
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <strong>New Total:</strong> {stock.quantity} units
+              </Typography>
+            </Box>
+          )}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
             <TextField
               margin="normal"
@@ -85,6 +123,7 @@ export default function EditStock() {
               name="productId"
               value={stock.productId}
               onChange={handleChange}
+              disabled={isRestockMode}
             >
               {products.map((product) => (
                 <MenuItem key={product.id} value={product.id}>
@@ -101,6 +140,7 @@ export default function EditStock() {
               name="warehouseId"
               value={stock.warehouseId}
               onChange={handleChange}
+              disabled={isRestockMode}
             >
               {warehouses.map((warehouse) => (
                 <MenuItem key={warehouse.id} value={warehouse.id}>
@@ -108,17 +148,44 @@ export default function EditStock() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Quantity"
-              name="quantity"
-              type="number"
-              inputProps={{ min: '0' }}
-              value={stock.quantity}
-              onChange={handleChange}
-            />
+            
+            {isRestockMode ? (
+              <>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Add Quantity"
+                  type="number"
+                  inputProps={{ min: '1' }}
+                  value={restockAmount}
+                  onChange={handleRestockAmountChange}
+                  helperText={`Current: ${originalQuantity} units → New Total: ${stock.quantity} units`}
+                />
+                <TextField
+                  margin="normal"
+                  fullWidth
+                  label="New Total Quantity"
+                  name="quantity"
+                  type="number"
+                  value={stock.quantity}
+                  disabled
+                  helperText="This will be the final quantity after restocking"
+                />
+              </>
+            ) : (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Quantity"
+                name="quantity"
+                type="number"
+                inputProps={{ min: '0' }}
+                value={stock.quantity}
+                onChange={handleChange}
+              />
+            )}
             <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
               <Button
                 type="submit"
@@ -126,7 +193,7 @@ export default function EditStock() {
                 variant="contained"
                 color="primary"
               >
-                Update Stock
+                {isRestockMode ? 'Add to Inventory' : 'Update Stock'}
               </Button>
               <Button
                 fullWidth
