@@ -13,10 +13,16 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Chip,
+  LinearProgress,
 } from '@mui/material';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import CategoryIcon from '@mui/icons-material/Category';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import MetricCard from './components/MetricCard';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -50,8 +56,16 @@ export default function Home() {
       ...product,
       totalQuantity,
       isLowStock: totalQuantity < product.reorderPoint,
+      isCriticalStock: totalQuantity < product.reorderPoint * 0.5,
+      isOutOfStock: totalQuantity === 0,
     };
   });
+
+  // Calculate KPIs
+  const lowStockCount = inventoryOverview.filter(item => item.isLowStock && !item.isOutOfStock).length;
+  const criticalStockCount = inventoryOverview.filter(item => item.isCriticalStock && !item.isOutOfStock).length;
+  const outOfStockCount = inventoryOverview.filter(item => item.isOutOfStock).length;
+  const healthyStockCount = inventoryOverview.filter(item => !item.isLowStock).length;
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
@@ -59,40 +73,59 @@ export default function Home() {
         Dashboard
       </Typography>
 
-      {/* Summary Cards */}
+      {/* Enhanced Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6">Total Products</Typography>
-              </Box>
-              <Typography variant="h3">{products.length}</Typography>
-            </CardContent>
-          </Card>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Products"
+            value={products.length}
+            icon={CategoryIcon}
+            subtitle={`${healthyStockCount} healthy stock`}
+            subtitleIcon={TrendingUpIcon}
+            subtitleColor="success.main"
+          />
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <WarehouseIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6">Warehouses</Typography>
-              </Box>
-              <Typography variant="h3">{warehouses.length}</Typography>
-            </CardContent>
-          </Card>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Inventory Value"
+            value={`$${totalValue.toLocaleString()}`}
+            icon={InventoryIcon}
+            subtitle={`${warehouses.length} warehouses`}
+            subtitleIcon={WarehouseIcon}
+            subtitleColor="primary.main"
+            iconColor="primary.main"
+          />
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <InventoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6">Total Inventory Value</Typography>
-              </Box>
-              <Typography variant="h3">${totalValue.toFixed(2)}</Typography>
-            </CardContent>
-          </Card>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Low Stock Alerts"
+            value={lowStockCount}
+            icon={WarningIcon}
+            iconColor="warning.main"
+            valueColor={lowStockCount > 0 ? 'warning.main' : 'text.primary'}
+            chip={
+              <Chip 
+                label={`${criticalStockCount} critical`} 
+                size="small" 
+                color={criticalStockCount > 0 ? "error" : "default"}
+                variant="outlined"
+              />
+            }
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Out of Stock"
+            value={outOfStockCount}
+            icon={ErrorIcon}
+            iconColor="error.main"
+            valueColor={outOfStockCount > 0 ? 'error.main' : 'text.primary'}
+            subtitle="Immediate action required"
+            subtitleColor="error.light"
+          />
         </Grid>
       </Grid>
 
@@ -117,23 +150,39 @@ export default function Home() {
               <TableRow 
                 key={item.id}
                 sx={{ 
-                  backgroundColor: item.isLowStock ? '#fff3e0' : 'inherit' 
+                  backgroundColor: item.isOutOfStock ? '#ffebee' : 
+                                   item.isCriticalStock ? '#fff3e0' :
+                                   item.isLowStock ? '#fff8e1' : 'inherit' 
                 }}
               >
                 <TableCell>{item.sku}</TableCell>
                 <TableCell>{item.name}</TableCell>
                 <TableCell>{item.category}</TableCell>
-                <TableCell align="right">{item.totalQuantity}</TableCell>
+                <TableCell align="right">
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    {item.totalQuantity}
+                    <Box sx={{ ml: 1, width: 60 }}>
+                      <LinearProgress 
+                        variant="determinate" 
+                        value={Math.min((item.totalQuantity / (item.reorderPoint * 2)) * 100, 100)}
+                        color={item.isOutOfStock ? 'error' : 
+                               item.isCriticalStock ? 'warning' :
+                               item.isLowStock ? 'warning' : 'success'}
+                        sx={{ height: 4, borderRadius: 2 }}
+                      />
+                    </Box>
+                  </Box>
+                </TableCell>
                 <TableCell align="right">{item.reorderPoint}</TableCell>
                 <TableCell>
-                  {item.isLowStock ? (
-                    <Typography color="warning.main" fontWeight="bold">
-                      Low Stock
-                    </Typography>
+                  {item.isOutOfStock ? (
+                    <Chip label="Out of Stock" color="error" size="small" />
+                  ) : item.isCriticalStock ? (
+                    <Chip label="Critical" color="error" size="small" variant="outlined" />
+                  ) : item.isLowStock ? (
+                    <Chip label="Low Stock" color="warning" size="small" />
                   ) : (
-                    <Typography color="success.main">
-                      In Stock
-                    </Typography>
+                    <Chip label="In Stock" color="success" size="small" variant="outlined" />
                   )}
                 </TableCell>
               </TableRow>
