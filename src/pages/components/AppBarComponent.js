@@ -28,9 +28,13 @@ export default function AppBarComponent({ onMenuClick, isDrawerOpen }) {
         >
           <MenuIcon />
         </IconButton>
-        <Inventory2Icon sx={{ mr: 2 }} />
+        <Inventory2Icon sx={{
+          mr: 2,
+          color: 'primary.main',
+          fontSize: '1.5rem'
+        }} />
         <Typography variant="h6" noWrap component="div">
-          Inventory Management
+        GreenSupply Co - Inventory Management
         </Typography>
       </Toolbar>
     </AppBar>
