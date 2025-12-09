@@ -2,25 +2,17 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   Paper,
-  Chip,
   IconButton,
   Typography,
   Box,
-  Button,
   TablePagination,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import InventoryTable from './InventoryTable';
 
 export default function StockDetailsModal({ 
   open, 
@@ -103,101 +95,36 @@ export default function StockDetailsModal({
         </Box>
       </DialogTitle>
       
-      <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
+      <DialogContent sx={{ p: 2, overflow: 'hidden' }}>
         <TableContainer 
           component={Paper} 
           variant="outlined"
           sx={{ 
             maxHeight: '60vh',
-            overflow: 'auto'
+            overflow: 'auto',
+            '& .MuiTable-root': {
+              '& .MuiTableCell-root': {
+                padding: '12px 16px',
+                whiteSpace: 'nowrap'
+              },
+              '& .MuiTableCell-head': {
+                fontWeight: 600,
+                backgroundColor: 'grey.50'
+              }
+            }
           }}
         >
-          <Table size="small" stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Product</strong></TableCell>
-                <TableCell><strong>SKU</strong></TableCell>
-                <TableCell><strong>Warehouse</strong></TableCell>
-                <TableCell align="right"><strong>Current Stock</strong></TableCell>
-                <TableCell align="right"><strong>Reorder Point</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedData.map((item) => {
-                const product = products.find(p => p.id === item.productId);
-                const warehouse = warehouses.find(w => w.id === item.warehouseId);
-                const isCritical = item.quantity < (product?.reorderPoint * 0.5);
-                const isOutOfStock = item.quantity === 0;
-                
-                return (
-                  <TableRow key={`${item.productId}-${item.warehouseId}`}>
-                    <TableCell>{product?.name}</TableCell>
-                    <TableCell>{product?.sku}</TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight={500}>
-                          {warehouse?.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {warehouse?.location}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography 
-                        variant="body2"
-                        color={isOutOfStock ? 'error.main' : isCritical ? 'warning.main' : 'text.primary'}
-                        fontWeight={isOutOfStock || isCritical ? 600 : 400}
-                      >
-                        {item.quantity.toLocaleString()}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography variant="body2" color="text.secondary">
-                        {product?.reorderPoint?.toLocaleString()}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {isOutOfStock ? (
-                        <Chip label="Out of Stock" color="error" size="small" />
-                      ) : isCritical ? (
-                        <Chip label="Critical" color="error" size="small" variant="outlined" />
-                      ) : (
-                        <Chip label="Low Stock" color="warning" size="small" />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          color="primary"
-                          startIcon={<EditIcon />}
-                          onClick={() => handleEdit(item.productId, item.warehouseId)}
-                          sx={{ minWidth: 'auto' }}
-                        >
-                          Edit
-                        </Button>
-                        {(isOutOfStock || isCritical || item.quantity < product?.reorderPoint) && (
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color={isOutOfStock ? "error" : "warning"}
-                            onClick={() => handleRestock(item.productId, item.warehouseId)}
-                            sx={{ minWidth: 'auto' }}
-                          >
-                            Restock
-                          </Button>
-                        )}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+          <InventoryTable 
+            data={paginatedData}
+            products={products}
+            warehouses={warehouses}
+            showActions={true}
+            showWarehouse={true}
+            size="small"
+            stickyHeader={true}
+            onEdit={(item) => handleEdit(item.productId, item.warehouseId)}
+            onRestock={(item) => handleRestock(item.productId, item.warehouseId)}
+          />
         </TableContainer>
         
         {/* Pagination outside of scrollable area */}

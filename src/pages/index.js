@@ -2,21 +2,12 @@ import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   Paper,
-  Chip,
-  Button,
-  Box,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
+import InventoryTable from './components/InventoryTable';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -68,8 +59,8 @@ export default function Home() {
     };
   });
 
-  const handleEditProduct = (productId) => {
-    router.push(`/products/edit/${productId}`);
+  const handleEditProduct = (item) => {
+    router.push(`/products/edit/${item.id}`);
   };
 
   const handleRestockProduct = (product) => {
@@ -101,85 +92,15 @@ export default function Home() {
         Inventory Overview
       </Typography>
       <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>SKU</strong></TableCell>
-              <TableCell><strong>Product Name</strong></TableCell>
-              <TableCell><strong>Category</strong></TableCell>
-              <TableCell align="right"><strong>Total Stock</strong></TableCell>
-              <TableCell align="right"><strong>Reorder Point</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Actions</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {inventoryOverview.map((item) => (
-              <TableRow 
-                key={item.id}
-                sx={{ 
-                  backgroundColor: item.isOutOfStock ? '#ffebee' : 
-                                   item.isCriticalStock ? '#fff3e0' :
-                                   item.isLowStock ? '#fff8e1' : 'inherit' 
-                }}
-              >
-                <TableCell>{item.sku}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.category}</TableCell>
-                <TableCell align="right">
-                  <Typography 
-                    variant="body2" 
-                    fontWeight={item.isLowStock ? 600 : 400}
-                    color={item.isOutOfStock ? 'error.main' : 
-                           item.isCriticalStock ? 'warning.main' :
-                           item.isLowStock ? 'warning.main' : 'text.primary'}
-                  >
-                    {item.totalQuantity.toLocaleString()}
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2" color="text.secondary">
-                    {item.reorderPoint.toLocaleString()}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  {item.isOutOfStock ? (
-                    <Chip label="Out of Stock" color="error" size="small" />
-                  ) : item.isCriticalStock ? (
-                    <Chip label="Critical" color="error" size="small" variant="outlined" />
-                  ) : item.isLowStock ? (
-                    <Chip label="Low Stock" color="warning" size="small" />
-                  ) : (
-                    <Chip label="In Stock" color="success" size="small" variant="outlined" />
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => handleEditProduct(item.id)}
-                    >
-                      Edit
-                    </Button>
-                    {(item.isLowStock || item.isOutOfStock) && (
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color={item.isOutOfStock ? "error" : "warning"}
-                        onClick={() => handleRestockProduct(item)}
-                        disabled={!item.lowestStockWarehouse}
-                      >
-                        Restock
-                      </Button>
-                    )}
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <InventoryTable 
+          data={inventoryOverview}
+          products={products}
+          warehouses={warehouses}
+          showActions={true}
+          showWarehouse={false}
+          onEdit={handleEditProduct}
+          onRestock={handleRestockProduct}
+        />
       </TableContainer>
     </Container>
   );
