@@ -12,7 +12,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import CloseIcon from '@mui/icons-material/Close';
-import InventoryTable from './InventoryTable';
+import InventoryTable from '../InventoryTable';
 
 export default function StockDetailsModal({ 
   open, 

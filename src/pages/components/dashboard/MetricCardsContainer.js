@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Grid, Chip, Tooltip } from '@mui/material';
-import MetricCard from '../MetricCard';
-import StockDetailsModal from '../StockDetailsModal';
+import MetricCard from './MetricCard';
+import StockDetailsModal from './StockDetailsModal';
 import CategoryIcon from '@mui/icons-material/Category';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
