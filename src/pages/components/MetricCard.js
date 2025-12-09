@@ -25,19 +25,18 @@ export default function MetricCard({
           {value}
         </Typography>
         
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {chip ? (
-            chip
-          ) : subtitle ? (
-            <>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+          {subtitle && (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {SubtitleIcon && (
                 <SubtitleIcon sx={{ color: subtitleColor, fontSize: '1rem', mr: 0.5 }} />
               )}
               <Typography variant="body2" color={subtitleColor}>
                 {subtitle}
               </Typography>
-            </>
-          ) : null}
+            </Box>
+          )}
+          {chip && chip}
         </Box>
       </CardContent>
     </Card>

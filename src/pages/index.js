@@ -3,9 +3,6 @@ import {
   Container,
   Typography,
   Box,
-  Grid,
-  Card,
-  CardContent,
   Table,
   TableBody,
   TableCell,
@@ -16,13 +13,7 @@ import {
   Chip,
   LinearProgress,
 } from '@mui/material';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import WarehouseIcon from '@mui/icons-material/Warehouse';
-import CategoryIcon from '@mui/icons-material/Category';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import MetricCard from './components/MetricCard';
+import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -61,11 +52,6 @@ export default function Home() {
     };
   });
 
-  // Calculate KPIs
-  const lowStockCount = inventoryOverview.filter(item => item.isLowStock && !item.isOutOfStock).length;
-  const criticalStockCount = inventoryOverview.filter(item => item.isCriticalStock && !item.isOutOfStock).length;
-  const outOfStockCount = inventoryOverview.filter(item => item.isOutOfStock).length;
-  const healthyStockCount = inventoryOverview.filter(item => !item.isLowStock).length;
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
@@ -73,61 +59,14 @@ export default function Home() {
         Dashboard
       </Typography>
 
-      {/* Enhanced Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <MetricCard
-            title="Total Products"
-            value={products.length}
-            icon={CategoryIcon}
-            subtitle={`${healthyStockCount} healthy stock`}
-            subtitleIcon={TrendingUpIcon}
-            subtitleColor="success.main"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <MetricCard
-            title="Inventory Value"
-            value={`$${totalValue.toLocaleString()}`}
-            icon={InventoryIcon}
-            subtitle={`${warehouses.length} warehouses`}
-            subtitleIcon={WarehouseIcon}
-            subtitleColor="primary.main"
-            iconColor="primary.main"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <MetricCard
-            title="Low Stock Alerts"
-            value={lowStockCount}
-            icon={WarningIcon}
-            iconColor="warning.main"
-            valueColor={lowStockCount > 0 ? 'warning.main' : 'text.primary'}
-            chip={
-              <Chip 
-                label={`${criticalStockCount} critical`} 
-                size="small" 
-                color={criticalStockCount > 0 ? "error" : "default"}
-                variant="outlined"
-              />
-            }
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <MetricCard
-            title="Out of Stock"
-            value={outOfStockCount}
-            icon={ErrorIcon}
-            iconColor="error.main"
-            valueColor={outOfStockCount > 0 ? 'error.main' : 'text.primary'}
-            subtitle="Immediate action required"
-            subtitleColor="error.light"
-          />
-        </Grid>
-      </Grid>
+      {/* Dashboard Metrics */}
+      <MetricCardsContainer 
+        products={products}
+        warehouses={warehouses}
+        stock={stock}
+        totalValue={totalValue}
+        inventoryOverview={inventoryOverview}
+      />
 
       {/* Inventory Overview Table */}
       <Typography variant="h5" gutterBottom>
