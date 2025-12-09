@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
-  Grid,
+  TableContainer,
+  Paper,
 } from '@mui/material';
-import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
-import StockLevelChart from './components/charts/StockLevelChart';
-import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
+import { useRouter } from 'next/router';
+import InventoryTable from '../components/InventoryTable';
 
-export default function Home() {
+export default function Inventory() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
   
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch all data
@@ -26,12 +27,6 @@ export default function Home() {
       setStock(stockData);
     });
   }, []);
-
-  // Calculate total inventory value
-  const totalValue = stock.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.productId);
-    return sum + (product ? product.unitCost * item.quantity : 0);
-  }, 0);
 
   // Get products with stock across all warehouses
   const inventoryOverview = products.map(product => {
@@ -57,32 +52,35 @@ export default function Home() {
     };
   });
 
+  const handleEditProduct = (item) => {
+    router.push(`/products/edit/${item.id}`);
+  };
+
+  const handleRestockProduct = (product) => {
+    // Find the warehouse with lowest stock for restocking
+    if (product.lowestStockWarehouse) {
+      const stockRecord = product.lowestStockWarehouse;
+      router.push(`/stock/edit/${stockRecord.id}?restock=true&currentQuantity=${stockRecord.quantity}`);
+    }
+  };
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Dashboard
+        Inventory Overview
       </Typography>
-
-      {/* Dashboard Metrics */}
-      <MetricCardsContainer 
-        products={products}
-        warehouses={warehouses}
-        stock={stock}
-        totalValue={totalValue}
-        inventoryOverview={inventoryOverview}
-      />
-
-      {/* Stock Level Chart */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6} lg={4}>
-          <StockLevelChart 
-            metrics={useDashboardMetrics(products, warehouses, stock, inventoryOverview)}
-            stock={stock}
-            products={products}
-          />
-        </Grid>
-      </Grid>
+      
+      <TableContainer component={Paper}>
+        <InventoryTable 
+          data={inventoryOverview}
+          products={products}
+          warehouses={warehouses}
+          showActions={true}
+          showWarehouse={false}
+          onEdit={handleEditProduct}
+          onRestock={handleRestockProduct}
+        />
+      </TableContainer>
     </Container>
   );
 }

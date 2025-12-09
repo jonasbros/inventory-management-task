@@ -8,6 +8,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import CategoryIcon from '@mui/icons-material/Category';
 import BusinessIcon from '@mui/icons-material/Business';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -16,6 +17,7 @@ export default function DrawerList() {
 
   const menuItems = [
     { text: 'Dashboard', href: '/', icon: SpaceDashboardIcon },
+    { text: 'Inventory', href: '/inventory', icon: InventoryIcon },
     { text: 'Products', href: '/products', icon: CategoryIcon },
     { text: 'Warehouses', href: '/warehouses', icon: BusinessIcon },
     { text: 'Stock Levels', href: '/stock', icon: AssessmentIcon },

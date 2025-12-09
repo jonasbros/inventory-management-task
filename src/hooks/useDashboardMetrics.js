@@ -19,6 +19,10 @@ export function useDashboardMetrics(products, warehouses, stock, inventoryOvervi
     const outOfStockCount = countByStatus(inventoryOverview, item => item.isOutOfStock);
     const healthyStockCount = countByStatus(inventoryOverview, item => !item.isLowStock);
 
+    // Count unique products with issues (for consistent card display)
+    const uniqueProductsWithLowStock = new Set(lowStockIncidents.map(item => item.productId)).size;
+    const uniqueProductsWithCriticalStock = new Set(criticalStockIncidents.map(item => item.productId)).size;
+
     return {
       // Product metrics
       totalProducts: products.length,
@@ -27,16 +31,16 @@ export function useDashboardMetrics(products, warehouses, stock, inventoryOvervi
       // Warehouse metrics
       totalWarehouses: warehouses.length,
       
-      // Stock alert metrics
-      lowStockCount: lowStockIncidents.length,
-      criticalStockCount: criticalStockIncidents.length,
+      // Product-level stock alert metrics (unique products)
+      lowStockCount: uniqueProductsWithLowStock,
+      criticalStockCount: uniqueProductsWithCriticalStock,
       outOfStockCount,
       
       // Warehouse-level metrics
       warehouseLowStockCount: warehousesWithLowStock.size,
       warehouseZeroStockCount: warehousesWithZeroStock.size,
       
-      // Raw data for advanced calculations
+      // Raw data for modals (warehouse incidents)
       lowStockIncidents,
       criticalStockIncidents,
       warehousesWithZeroStock,
