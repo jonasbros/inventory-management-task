@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -11,14 +10,20 @@ import {
   TableRow,
   Paper,
   Chip,
-  LinearProgress,
+  Button,
+  Box,
+  Menu,
+  MenuItem,
 } from '@mui/material';
+import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
+  
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch all data
@@ -43,14 +48,37 @@ export default function Home() {
   const inventoryOverview = products.map(product => {
     const productStock = stock.filter(s => s.productId === product.id);
     const totalQuantity = productStock.reduce((sum, s) => sum + s.quantity, 0);
+    
+    // Find the lowest stock warehouse for this product
+    const lowestStockWarehouse = productStock.reduce((lowest, current) => {
+      if (!lowest || current.quantity < lowest.quantity) {
+        return current;
+      }
+      return lowest;
+    }, null);
+    
     return {
       ...product,
       totalQuantity,
       isLowStock: totalQuantity < product.reorderPoint,
       isCriticalStock: totalQuantity < product.reorderPoint * 0.5,
       isOutOfStock: totalQuantity === 0,
+      lowestStockWarehouse, // For restock actions
+      productStock, // All stock records for this product
     };
   });
+
+  const handleEditProduct = (productId) => {
+    router.push(`/products/edit/${productId}`);
+  };
+
+  const handleRestockProduct = (product) => {
+    // Find the warehouse with lowest stock for restocking
+    if (product.lowestStockWarehouse) {
+      const stockRecord = product.lowestStockWarehouse;
+      router.push(`/stock/edit/${stockRecord.id}?restock=true&currentQuantity=${stockRecord.quantity}`);
+    }
+  };
 
 
   return (
@@ -82,6 +110,7 @@ export default function Home() {
               <TableCell align="right"><strong>Total Stock</strong></TableCell>
               <TableCell align="right"><strong>Reorder Point</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Actions</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -98,21 +127,21 @@ export default function Home() {
                 <TableCell>{item.name}</TableCell>
                 <TableCell>{item.category}</TableCell>
                 <TableCell align="right">
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    {item.totalQuantity}
-                    <Box sx={{ ml: 1, width: 60 }}>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={Math.min((item.totalQuantity / (item.reorderPoint * 2)) * 100, 100)}
-                        color={item.isOutOfStock ? 'error' : 
-                               item.isCriticalStock ? 'warning' :
-                               item.isLowStock ? 'warning' : 'success'}
-                        sx={{ height: 4, borderRadius: 2 }}
-                      />
-                    </Box>
-                  </Box>
+                  <Typography 
+                    variant="body2" 
+                    fontWeight={item.isLowStock ? 600 : 400}
+                    color={item.isOutOfStock ? 'error.main' : 
+                           item.isCriticalStock ? 'warning.main' :
+                           item.isLowStock ? 'warning.main' : 'text.primary'}
+                  >
+                    {item.totalQuantity.toLocaleString()}
+                  </Typography>
                 </TableCell>
-                <TableCell align="right">{item.reorderPoint}</TableCell>
+                <TableCell align="right">
+                  <Typography variant="body2" color="text.secondary">
+                    {item.reorderPoint.toLocaleString()}
+                  </Typography>
+                </TableCell>
                 <TableCell>
                   {item.isOutOfStock ? (
                     <Chip label="Out of Stock" color="error" size="small" />
@@ -123,6 +152,29 @@ export default function Home() {
                   ) : (
                     <Chip label="In Stock" color="success" size="small" variant="outlined" />
                   )}
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => handleEditProduct(item.id)}
+                    >
+                      Edit
+                    </Button>
+                    {(item.isLowStock || item.isOutOfStock) && (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color={item.isOutOfStock ? "error" : "warning"}
+                        onClick={() => handleRestockProduct(item)}
+                        disabled={!item.lowestStockWarehouse}
+                      >
+                        Restock
+                      </Button>
+                    )}
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
