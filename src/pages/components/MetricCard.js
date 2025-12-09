@@ -9,10 +9,23 @@ export default function MetricCard({
   subtitleColor = 'text.secondary',
   valueColor = 'text.primary',
   chip,
-  iconColor = 'primary.main'
+  iconColor = 'primary.main',
+  onClick,
+  clickable = false
 }) {
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card 
+      sx={{ 
+        height: '100%',
+        cursor: clickable ? 'pointer' : 'default',
+        transition: 'all 0.2s ease-in-out',
+        '&:hover': clickable ? {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 6px 20px rgba(46, 125, 50, 0.2)',
+        } : {}
+      }}
+      onClick={clickable ? onClick : undefined}
+    >
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>

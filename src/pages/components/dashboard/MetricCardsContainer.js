@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Grid, Chip, Tooltip } from '@mui/material';
 import MetricCard from '../MetricCard';
+import StockDetailsModal from '../StockDetailsModal';
 import CategoryIcon from '@mui/icons-material/Category';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
@@ -16,8 +18,29 @@ export default function MetricCardsContainer({
   inventoryOverview 
 }) {
   const metrics = useDashboardMetrics(products, warehouses, stock, inventoryOverview);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState({ title: '', data: [] });
+
+  const handleLowStockClick = () => {
+    setModalData({
+      title: 'Low Stock Details',
+      data: metrics.lowStockIncidents
+    });
+    setModalOpen(true);
+  };
+
+  const handleOutOfStockClick = () => {
+    // Get out of stock incidents from stock data
+    const outOfStockIncidents = stock.filter(item => item.quantity === 0);
+    setModalData({
+      title: 'Out of Stock Details',
+      data: outOfStockIncidents
+    });
+    setModalOpen(true);
+  };
 
   return (
+    <>
     <Grid container spacing={3} sx={{ mb: 4 }}>
       <Grid item xs={12} sm={6} md={3}>
         <MetricCard
@@ -51,6 +74,8 @@ export default function MetricCardsContainer({
           valueColor={metrics.lowStockCount > 0 ? 'warning.main' : 'text.primary'}
           subtitle={metrics.warehouseLowStockCount > 0 ? `${metrics.warehouseLowStockCount} warehouses affected` : "All warehouses healthy"}
           subtitleColor={metrics.warehouseLowStockCount > 0 ? "warning.main" : "success.main"}
+          clickable={true}
+          onClick={handleLowStockClick}
           chip={
             <Tooltip title="Products with stock below 50% of reorder point at specific warehouses - immediate attention required">
               <Chip 
@@ -73,8 +98,20 @@ export default function MetricCardsContainer({
           valueColor={metrics.outOfStockCount > 0 ? 'error.main' : 'text.primary'}
           subtitle={metrics.warehouseZeroStockCount > 0 ? `${metrics.warehouseZeroStockCount} warehouse locations` : "All warehouses stocked"}
           subtitleColor={metrics.warehouseZeroStockCount > 0 ? "error.main" : "success.main"}
+          clickable={true}
+          onClick={handleOutOfStockClick}
         />
       </Grid>
     </Grid>
+    
+    <StockDetailsModal
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      title={modalData.title}
+      stockData={modalData.data}
+      products={products}
+      warehouses={warehouses}
+    />
+    </>
   );
 }
