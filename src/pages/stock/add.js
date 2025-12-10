@@ -9,6 +9,7 @@ import {
   Box,
   Paper,
   MenuItem,
+  CircularProgress,
 } from '@mui/material';
 
 export default function AddStock() {
@@ -19,6 +20,8 @@ export default function AddStock() {
   });
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -29,6 +32,8 @@ export default function AddStock() {
     ]).then(([productsData, warehousesData]) => {
       setProducts(productsData);
       setWarehouses(warehousesData);
+    }).finally(() => {
+      setLoading(false);
     });
   }, []);
 

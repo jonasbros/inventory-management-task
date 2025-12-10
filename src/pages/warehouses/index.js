@@ -19,12 +19,14 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
+  CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
 export default function Warehouses() {
   const [warehouses, setWarehouses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
 
@@ -35,7 +37,8 @@ export default function Warehouses() {
   const fetchWarehouses = () => {
     fetch('/api/warehouses')
       .then((res) => res.json())
-      .then((data) => setWarehouses(data));
+      .then((data) => setWarehouses(data))
+      .finally(() => setLoading(false));
   };
 
   const handleClickOpen = (id) => {
@@ -62,6 +65,26 @@ export default function Warehouses() {
       console.error('Error deleting warehouse:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: 'calc(100vh - 64px)',
+          flexDirection: 'column',
+          gap: 2
+        }}
+      >
+        <CircularProgress size={48} />
+        <Typography variant="body1" color="text.secondary">
+          Loading warehouses...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <>

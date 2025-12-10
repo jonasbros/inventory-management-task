@@ -8,6 +8,7 @@ import {
   Button,
   Box,
   Paper,
+  CircularProgress,
 } from '@mui/material';
 
 export default function AddProduct() {
@@ -18,6 +19,7 @@ export default function AddProduct() {
     unitCost: '',
     reorderPoint: '',
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -27,17 +29,23 @@ export default function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...product,
-        unitCost: parseFloat(product.unitCost),
-        reorderPoint: parseInt(product.reorderPoint),
-      }),
-    });
-    if (res.ok) {
-      router.push('/products');
+    setSubmitting(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...product,
+          unitCost: parseFloat(product.unitCost),
+          reorderPoint: parseInt(product.reorderPoint),
+        }),
+      });
+      if (res.ok) {
+        router.push('/products');
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -104,8 +112,10 @@ export default function AddProduct() {
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={submitting}
+                startIcon={submitting ? <CircularProgress size={20} /> : null}
               >
-                Add Product
+                {submitting ? 'Adding...' : 'Add Product'}
               </Button>
               <Button
                 fullWidth

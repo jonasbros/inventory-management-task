@@ -19,6 +19,7 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
+  CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -27,6 +28,7 @@ export default function Stock() {
   const [stock, setStock] = useState([]);
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedStockId, setSelectedStockId] = useState(null);
 
@@ -43,6 +45,8 @@ export default function Stock() {
       setStock(stockData);
       setProducts(productsData);
       setWarehouses(warehousesData);
+    }).finally(() => {
+      setLoading(false);
     });
   };
 
@@ -80,6 +84,26 @@ export default function Stock() {
       console.error('Error deleting stock:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: 'calc(100vh - 64px)',
+          flexDirection: 'column',
+          gap: 2
+        }}
+      >
+        <CircularProgress size={48} />
+        <Typography variant="body1" color="text.secondary">
+          Loading stock data...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <>

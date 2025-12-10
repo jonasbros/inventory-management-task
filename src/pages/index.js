@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';\nimport Head from 'next/head';
+import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import {
   Container,
   Typography,
@@ -6,6 +7,7 @@ import {
   Paper,
   Box,
   TableContainer,
+  CircularProgress,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
@@ -20,6 +22,7 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const router = useRouter();
   
@@ -34,12 +37,14 @@ export default function Home() {
       setProducts(productsData);
       setWarehouses(warehousesData);
       setStock(stockData);
+    }).finally(() => {
+      setLoading(false);
     });
   }, []);
 
   // Process all dashboard data
   const { totalValue, valueByCategory, inventoryOverview, warehouseData } = useDashboardData(products, warehouses, stock);
-
+  const dashboardMetrics = useDashboardMetrics(products, warehouses, stock, inventoryOverview);
 
   const handleEditProduct = (item) => {
     router.push(`/products/edit/${item.id}`);
@@ -53,6 +58,26 @@ export default function Home() {
     }
   };
 
+
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: 'calc(100vh - 64px)',
+          flexDirection: 'column',
+          gap: 2
+        }}
+      >
+        <CircularProgress size={48} />
+        <Typography variant="body1" color="text.secondary">
+          Loading dashboard...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -101,7 +126,7 @@ export default function Home() {
         <Grid item xs={12} lg={4}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <StockLevelChart 
-              metrics={useDashboardMetrics(products, warehouses, stock, inventoryOverview)}
+              metrics={dashboardMetrics}
               stock={stock}
               products={products}
             />
