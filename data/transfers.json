@@ -1,0 +1,35 @@
+[
+  {
+    "id": "s396b6y5n",
+    "productId": 6,
+    "fromWarehouseId": 4,
+    "toWarehouseId": 3,
+    "quantity": 25,
+    "notes": "test notes",
+    "status": "completed",
+    "createdAt": "2025-12-10T16:42:53.328Z",
+    "completedAt": "2025-12-10T16:42:53.328Z"
+  },
+  {
+    "id": "cndlyr68p",
+    "productId": 6,
+    "fromWarehouseId": 4,
+    "toWarehouseId": 1,
+    "quantity": 12,
+    "notes": "test",
+    "status": "completed",
+    "createdAt": "2025-12-10T17:06:15.252Z",
+    "completedAt": "2025-12-10T17:06:15.252Z"
+  },
+  {
+    "id": "k7xt739n2",
+    "productId": 1,
+    "fromWarehouseId": 2,
+    "toWarehouseId": 1,
+    "quantity": 50,
+    "notes": "test",
+    "status": "completed",
+    "createdAt": "2025-12-10T17:29:02.001Z",
+    "completedAt": "2025-12-10T17:29:02.001Z"
+  }
+]
