@@ -128,7 +128,7 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
         }
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Stock Level Distribution
       </Typography>
       

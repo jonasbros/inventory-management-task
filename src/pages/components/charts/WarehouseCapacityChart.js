@@ -3,6 +3,9 @@ import { Box, Typography, Paper, useTheme } from '@mui/material';
 
 export default function WarehouseCapacityChart({ warehouseData = [] }) {
   const theme = useTheme();
+  
+  // Debug: log the data to see what we're getting
+  console.log('Warehouse Data:', warehouseData);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -27,7 +30,7 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
             Total Stock: {data.value.toLocaleString()} units
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Products: {data.payload.productCount}
+            Product Lines: {data.payload.productLines}
           </Typography>
         </Box>
       );
@@ -39,7 +42,7 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
     return (
       <Paper elevation={2} sx={{ p: 3, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="body2" color="text.secondary">
-          No warehouse data available
+          No warehouse data available (received {warehouseData.length} items)
         </Typography>
       </Paper>
     );
@@ -64,7 +67,7 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
         }
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Warehouse Capacity Overview
       </Typography>
       
@@ -72,34 +75,33 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={warehouseData}
-            layout="horizontal"
             margin={{
-              top: 5,
+              top: 20,
               right: 30,
-              left: 60,
-              bottom: 5,
+              left: 20,
+              bottom: 60,
             }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.grey[300]} />
             <XAxis 
-              type="number" 
-              tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
+              dataKey="name" 
+              tick={{ fontSize: 10, fill: theme.palette.text.secondary }}
               axisLine={{ stroke: theme.palette.grey[400] }}
               tickLine={{ stroke: theme.palette.grey[400] }}
+              angle={-45}
+              textAnchor="end"
+              height={60}
             />
             <YAxis 
-              dataKey="name" 
-              type="category" 
-              width={50}
               tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
               axisLine={{ stroke: theme.palette.grey[400] }}
               tickLine={{ stroke: theme.palette.grey[400] }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar 
-              dataKey="totalStock" 
+              dataKey="totalUnits" 
               fill={theme.palette.primary.light}
-              radius={[0, 4, 4, 0]}
+              radius={[4, 4, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -107,7 +109,7 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
       
       <Box sx={{ mt: 1, textAlign: 'center' }}>
         <Typography variant="caption" color="text.secondary">
-          Total stock units across all products
+          Total inventory units per warehouse location
         </Typography>
       </Box>
     </Paper>

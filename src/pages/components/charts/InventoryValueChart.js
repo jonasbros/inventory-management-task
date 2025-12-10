@@ -108,7 +108,7 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
         }
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Inventory Value by Category
       </Typography>
       

@@ -97,17 +97,26 @@ function findLowestStockWarehouse(productStock) {
 
 // Helper function: Calculate warehouse capacity overview
 function calculateWarehouseCapacity(warehouses, stock) {
-  return warehouses.map(warehouse => {
+  const result = warehouses.map(warehouse => {
     const warehouseStock = stock.filter(s => s.warehouseId === warehouse.id);
-    const totalStock = warehouseStock.reduce((sum, s) => sum + s.quantity, 0);
-    const productCount = warehouseStock.length;
+    const totalUnits = warehouseStock.reduce((sum, s) => sum + s.quantity, 0);
+    const productLines = warehouseStock.length; // Number of different products
+    
+    console.log(`Warehouse ${warehouse.name}:`, {
+      warehouseStock: warehouseStock.length,
+      totalUnits,
+      productLines
+    });
     
     return {
       name: warehouse.name,
       location: warehouse.location,
-      totalStock,
-      productCount,
+      totalUnits,
+      productLines,
       warehouseId: warehouse.id
     };
-  }).sort((a, b) => b.totalStock - a.totalStock); // Sort by stock level descending
+  }).sort((a, b) => b.totalUnits - a.totalUnits); // Sort by stock level descending
+  
+  console.log('Final warehouse result:', result);
+  return result;
 }

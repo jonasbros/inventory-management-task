@@ -3,11 +3,16 @@ import {
   Container,
   Typography,
   Grid,
+  Paper,
+  Box,
+  TableContainer,
 } from '@mui/material';
+import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 import StockLevelChart from './components/charts/StockLevelChart';
 import InventoryValueChart from './components/charts/InventoryValueChart';
 import WarehouseCapacityChart from './components/charts/WarehouseCapacityChart';
+import InventoryTable from './components/InventoryTable';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
 import { useDashboardData } from '../hooks/useDashboardData';
 
@@ -15,6 +20,8 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
+  
+  const router = useRouter();
   
 
   useEffect(() => {
@@ -33,9 +40,21 @@ export default function Home() {
   // Process all dashboard data
   const { totalValue, valueByCategory, inventoryOverview, warehouseData } = useDashboardData(products, warehouses, stock);
 
+  const handleEditProduct = (item) => {
+    router.push(`/products/edit/${item.id}`);
+  };
+
+  const handleRestockProduct = (product) => {
+    // Find the warehouse with lowest stock for restocking
+    if (product.lowestStockWarehouse) {
+      const stockRecord = product.lowestStockWarehouse;
+      router.push(`/stock/edit/${stockRecord.id}?restock=true&currentQuantity=${stockRecord.quantity}`);
+    }
+  };
+
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Dashboard
       </Typography>
@@ -49,25 +68,45 @@ export default function Home() {
         inventoryOverview={inventoryOverview}
       />
 
-      {/* Charts Section */}
+      {/* Main Content Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6} lg={4}>
-          <StockLevelChart 
-            metrics={useDashboardMetrics(products, warehouses, stock, inventoryOverview)}
-            stock={stock}
-            products={products}
-          />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <InventoryValueChart 
-            valueByCategory={valueByCategory}
-            totalValue={totalValue}
-          />
-        </Grid>
-        <Grid item xs={12} md={12} lg={6}>
+        {/* Left Side - Tables and Bar Chart */}
+        <Grid item xs={12} lg={8}>
+          {/* Inventory Overview Table */}
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+            Inventory Overview
+          </Typography>
+          <TableContainer component={Paper} sx={{ mb: 3 }}>
+            <InventoryTable 
+              data={inventoryOverview}
+              products={products}
+              warehouses={warehouses}
+              showActions={true}
+              showWarehouse={false}
+              onEdit={handleEditProduct}
+              onRestock={handleRestockProduct}
+            />
+          </TableContainer>
+
+          {/* Warehouse Capacity Chart */}
           <WarehouseCapacityChart 
             warehouseData={warehouseData}
           />
+        </Grid>
+
+        {/* Right Side - Pie Charts */}
+        <Grid item xs={12} lg={4}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <StockLevelChart 
+              metrics={useDashboardMetrics(products, warehouses, stock, inventoryOverview)}
+              stock={stock}
+              products={products}
+            />
+            <InventoryValueChart 
+              valueByCategory={valueByCategory}
+              totalValue={totalValue}
+            />
+          </Box>
         </Grid>
       </Grid>
     </Container>
