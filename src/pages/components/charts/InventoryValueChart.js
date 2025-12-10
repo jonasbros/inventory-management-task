@@ -1,51 +1,28 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Box, Typography, Paper, useTheme } from '@mui/material';
 
-export default function StockLevelChart({ metrics, stock = [], products = [] }) {
+export default function InventoryValueChart({ valueByCategory = [], totalValue = 0 }) {
   const theme = useTheme();
-  // Use warehouse-level incidents to match the cards
-  const outOfStockCount = metrics.outOfStockCount || 0;
-  const criticalCount = metrics.criticalStockCount || 0; 
-  const lowStockCount = metrics.lowStockCount || 0;
   
-  // Calculate healthy count as total products minus those with any warehouse issues
-  const productsWithIssues = new Set([
-    ...metrics.lowStockIncidents?.map(item => item.productId) || [],
-    ...metrics.criticalStockIncidents?.map(item => item.productId) || [],
-    ...(stock?.filter(item => item.quantity === 0).map(item => item.productId) || [])
-  ]);
-  
-  const healthyCount = products.length - productsWithIssues.size;
+  // Create chart data with lighter theme colors for better text contrast
+  const chartColors = [
+    theme.palette.success.light,
+    theme.palette.primary.light,
+    theme.palette.secondary.light,
+    theme.palette.info.light,
+    theme.palette.warning.light,
+    theme.palette.error.light,
+  ];
 
-  const data = [
-    { 
-      name: 'Healthy Stock', 
-      value: healthyCount, 
-      color: theme.palette.success.main
-    },
-    { 
-      name: 'Low Stock', 
-      value: lowStockCount, 
-      color: theme.palette.warning.main
-    },
-    { 
-      name: 'Critical Stock', 
-      value: criticalCount, 
-      color: theme.palette.error.main
-    },
-    { 
-      name: 'Out of Stock', 
-      value: outOfStockCount, 
-      color: theme.palette.error.dark
-    }
-  ].filter(item => item.value > 0); // Only show categories with actual data
-
-  const totalProducts = products.length;
+  const data = valueByCategory.map((item, index) => ({
+    ...item,
+    color: chartColors[index % chartColors.length]
+  }));
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
-      const percentage = totalProducts > 0 ? ((data.value / totalProducts) * 100).toFixed(1) : 0;
+      const percentage = totalValue > 0 ? ((data.value / totalValue) * 100).toFixed(1) : 0;
       
       return (
         <Box 
@@ -63,10 +40,13 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
             {data.payload.name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Products: {data.value}
+            Value: ${data.value.toLocaleString()}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Percentage: {percentage}%
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Products: {data.payload.productCount}
           </Typography>
         </Box>
       );
@@ -76,9 +56,9 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
 
   const CustomLegend = ({ payload }) => {
     return (
-      <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+      <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center' }}>
         {payload.map((entry, index) => (
-          <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Box 
               sx={{ 
                 width: 12, 
@@ -87,8 +67,8 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
                 borderRadius: '50%' 
               }} 
             />
-            <Typography variant="caption" color="text.secondary">
-              {entry.value}: {entry.payload.value}
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+              {entry.value}
             </Typography>
           </Box>
         ))}
@@ -96,11 +76,11 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
     );
   };
 
-  if (totalProducts === 0) {
+  if (data.length === 0 || totalValue === 0) {
     return (
       <Paper elevation={2} sx={{ p: 3, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="body2" color="text.secondary">
-          No inventory data available
+          No inventory value data available
         </Typography>
       </Paper>
     );
@@ -129,7 +109,7 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
       }}
     >
       <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
-        Stock Level Distribution
+        Inventory Value by Category
       </Typography>
       
       <Box sx={{ position: 'relative', flexGrow: 1, minHeight: 0 }}>
@@ -139,7 +119,6 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={50}
               outerRadius={80}
               paddingAngle={2}
               dataKey="value"
@@ -165,11 +144,11 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
             zIndex: 1
           }}
         >
-          <Typography variant="h4" fontWeight={700} color="primary.main">
-            {totalProducts}
+          <Typography variant="h5" fontWeight={700} color="text.primary">
+            ${totalValue.toLocaleString()}
           </Typography>
           <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
-            Total Products
+            Total Value
           </Typography>
         </Box>
       </Box>

@@ -6,7 +6,9 @@ import {
 } from '@mui/material';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 import StockLevelChart from './components/charts/StockLevelChart';
+import InventoryValueChart from './components/charts/InventoryValueChart';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
+import { useDashboardData } from '../hooks/useDashboardData';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -27,35 +29,8 @@ export default function Home() {
     });
   }, []);
 
-  // Calculate total inventory value
-  const totalValue = stock.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.productId);
-    return sum + (product ? product.unitCost * item.quantity : 0);
-  }, 0);
-
-  // Get products with stock across all warehouses
-  const inventoryOverview = products.map(product => {
-    const productStock = stock.filter(s => s.productId === product.id);
-    const totalQuantity = productStock.reduce((sum, s) => sum + s.quantity, 0);
-    
-    // Find the lowest stock warehouse for this product
-    const lowestStockWarehouse = productStock.reduce((lowest, current) => {
-      if (!lowest || current.quantity < lowest.quantity) {
-        return current;
-      }
-      return lowest;
-    }, null);
-    
-    return {
-      ...product,
-      totalQuantity,
-      isLowStock: totalQuantity < product.reorderPoint,
-      isCriticalStock: totalQuantity < product.reorderPoint * 0.5,
-      isOutOfStock: totalQuantity === 0,
-      lowestStockWarehouse, // For restock actions
-      productStock, // All stock records for this product
-    };
-  });
+  // Process all dashboard data
+  const { totalValue, valueByCategory, inventoryOverview } = useDashboardData(products, warehouses, stock);
 
 
   return (
@@ -73,13 +48,19 @@ export default function Home() {
         inventoryOverview={inventoryOverview}
       />
 
-      {/* Stock Level Chart */}
+      {/* Charts Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={6} lg={4}>
           <StockLevelChart 
             metrics={useDashboardMetrics(products, warehouses, stock, inventoryOverview)}
             stock={stock}
             products={products}
+          />
+        </Grid>
+        <Grid item xs={12} md={6} lg={4}>
+          <InventoryValueChart 
+            valueByCategory={valueByCategory}
+            totalValue={totalValue}
           />
         </Grid>
       </Grid>
