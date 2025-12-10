@@ -10,6 +10,7 @@ import {
   Button,
   Box,
   Typography,
+  TableSortLabel,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,7 +24,9 @@ export default function InventoryTable({
   size = "medium",
   stickyHeader = false,
   onEdit,
-  onRestock
+  onRestock,
+  sortConfig = { key: null, direction: 'asc' },
+  onSort
 }) {
   const router = useRouter();
 
@@ -85,17 +88,35 @@ export default function InventoryTable({
     return isOutOfStock || isCritical || isLowStock;
   };
 
+  const SortableTableCell = ({ children, sortKey, align = "left" }) => {
+    if (!onSort) {
+      return <TableCell align={align}><strong>{children}</strong></TableCell>;
+    }
+    
+    return (
+      <TableCell align={align}>
+        <TableSortLabel
+          active={sortConfig.key === sortKey}
+          direction={sortConfig.key === sortKey ? sortConfig.direction : 'asc'}
+          onClick={() => onSort(sortKey)}
+        >
+          <strong>{children}</strong>
+        </TableSortLabel>
+      </TableCell>
+    );
+  };
+
   return (
     <Table size={size} stickyHeader={stickyHeader}>
       <TableHead>
         <TableRow>
-          <TableCell><strong>SKU</strong></TableCell>
-          <TableCell><strong>Product Name</strong></TableCell>
-          <TableCell><strong>Category</strong></TableCell>
-          {showWarehouse && <TableCell><strong>Warehouse</strong></TableCell>}
-          <TableCell align="right"><strong>{showWarehouse ? 'Stock' : 'Total Stock'}</strong></TableCell>
-          <TableCell align="right"><strong>Reorder Point</strong></TableCell>
-          <TableCell><strong>Status</strong></TableCell>
+          <SortableTableCell sortKey="sku">SKU</SortableTableCell>
+          <SortableTableCell sortKey="name">Product Name</SortableTableCell>
+          <SortableTableCell sortKey="category">Category</SortableTableCell>
+          {showWarehouse && <SortableTableCell sortKey="warehouse">Warehouse</SortableTableCell>}
+          <SortableTableCell sortKey="stock" align="right">{showWarehouse ? 'Stock' : 'Total Stock'}</SortableTableCell>
+          <SortableTableCell sortKey="reorderPoint" align="right">Reorder Point</SortableTableCell>
+          <SortableTableCell sortKey="status">Status</SortableTableCell>
           {showActions && <TableCell><strong>Actions</strong></TableCell>}
         </TableRow>
       </TableHead>

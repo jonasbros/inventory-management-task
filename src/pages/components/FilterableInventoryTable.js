@@ -7,6 +7,7 @@ import {
 import SearchBox from './SearchBox';
 import FilterDropdown from './FilterDropdown';
 import InventoryTable from './InventoryTable';
+import TablePagination from './TablePagination';
 import { useInventoryFilters } from '../../hooks/useInventoryFilters';
 
 export default function FilterableInventoryTable({
@@ -19,7 +20,9 @@ export default function FilterableInventoryTable({
   stickyHeader = false,
   onEdit,
   onRestock,
-  title = "Inventory Overview"
+  title = "Inventory Overview",
+  enablePagination = true,
+  defaultPageSize = 10
 }) {
   const {
     searchTerm,
@@ -27,11 +30,26 @@ export default function FilterableInventoryTable({
     filters,
     setFilters,
     filteredInventory,
-    uniqueCategories
-  } = useInventoryFilters(inventoryOverview, products);
+    paginatedInventory,
+    uniqueCategories,
+    // Pagination state
+    page,
+    pageSize,
+    totalItems,
+    totalPages,
+    // Sorting state
+    sortConfig,
+    // Handlers
+    handleSort,
+    handlePageChange,
+    handlePageSizeChange
+  } = useInventoryFilters(inventoryOverview, products, { defaultPageSize });
+  
+  // Use paginated data if pagination is enabled, otherwise use filtered data
+  const displayData = enablePagination ? paginatedInventory : filteredInventory;
 
   return (
-    <Box>
+    <Box sx={{ mb: 3 }}>
       {title && (
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           {title}
@@ -53,10 +71,10 @@ export default function FilterableInventoryTable({
         />
       </Box>
       
-      <TableContainer component={Paper} sx={{ mb: 3 }}>
-        {filteredInventory.length > 0 ? (
+      <TableContainer component={Paper} sx={{ mb: enablePagination ? 0 : 3 }}>
+        {displayData.length > 0 ? (
           <InventoryTable 
-            data={filteredInventory}
+            data={displayData}
             products={products}
             warehouses={warehouses}
             showActions={showActions}
@@ -65,6 +83,8 @@ export default function FilterableInventoryTable({
             stickyHeader={stickyHeader}
             onEdit={onEdit}
             onRestock={onRestock}
+            sortConfig={sortConfig}
+            onSort={handleSort}
           />
         ) : (
           <Box sx={{ p: 4, textAlign: 'center' }}>
@@ -76,7 +96,22 @@ export default function FilterableInventoryTable({
             </Typography>
           </Box>
         )}
+        
+        {enablePagination && displayData.length > 0 && (
+          <TablePagination
+            page={page}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        )}
       </TableContainer>
+      
+      {enablePagination && displayData.length === 0 && (
+        <Box sx={{ mb: 3 }} />
+      )}
     </Box>
   );
 }
