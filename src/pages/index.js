@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';\nimport Head from 'next/head';
 import {
   Container,
   Typography,
@@ -55,10 +55,16 @@ export default function Home() {
 
 
   return (
-    <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Dashboard
-      </Typography>
+    <>
+      <Head>
+        <title>Dashboard - GreenSupply Co</title>
+        <meta name="description" content="Inventory management dashboard for GreenSupply Co warehouse operations" />
+      </Head>
+      
+      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Dashboard
+        </Typography>
 
       {/* Dashboard Metrics */}
       <MetricCardsContainer 
@@ -106,6 +112,7 @@ export default function Home() {
           </Box>
         </Grid>
       </Grid>
-    </Container>
+      </Container>
+    </>
   );
 }

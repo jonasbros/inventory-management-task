@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import {
   Container,
@@ -64,6 +65,11 @@ export default function Products() {
 
   return (
     <>
+      <Head>
+        <title>Products - GreenSupply Co</title>
+        <meta name="description" content="Manage eco-friendly products in your inventory" />
+      </Head>
+      
       <Container sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">

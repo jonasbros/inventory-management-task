@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import {
   Container,
@@ -82,6 +83,11 @@ export default function Stock() {
 
   return (
     <>
+      <Head>
+        <title>Stock Levels - GreenSupply Co</title>
+        <meta name="description" content="Monitor and manage inventory stock levels across all warehouses" />
+      </Head>
+      
       <Container sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
