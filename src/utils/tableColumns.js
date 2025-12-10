@@ -1,6 +1,7 @@
 import { Chip, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import Link from 'next/link';
 
 // Helper function to get status chip for inventory items
@@ -206,6 +207,42 @@ export const getDeleteAction = (onDelete, label = "Delete") => (item) => (
 
 export const getRestockAction = (onRestock) => (item) => getRestockButton(item, onRestock);
 
+export const getTransferAction = (onTransfer) => (item) => {
+  if (item.quantity === 0) return null;
+  
+  return (
+    <Button
+      key="transfer"
+      size="small"
+      variant="contained"
+      color="secondary"
+      startIcon={<SwapHorizIcon />}
+      onClick={() => onTransfer(item)}
+      sx={{ minWidth: 'auto' }}
+    >
+      Transfer
+    </Button>
+  );
+};
+
+export const getRequestStockAction = (onRequestStock) => (item) => {
+  if (item.quantity > 0) return null;
+  
+  return (
+    <Button
+      key="request"
+      size="small"
+      variant="outlined"
+      color="warning"
+      startIcon={<SwapHorizIcon />}
+      onClick={() => onRequestStock(item)}
+      sx={{ minWidth: 'auto' }}
+    >
+      Request Stock
+    </Button>
+  );
+};
+
 // Filter configurations
 export const getCategoryFilter = (data, accessor = (item) => item.category) => ({
   key: 'category',
@@ -241,3 +278,72 @@ export const getProductFilter = (products = []) => ({
     return product ? product.name : 'Unknown';
   },
 });
+
+// Transfer table columns
+export const getTransferColumns = (products = [], warehouses = []) => [
+  {
+    key: 'id',
+    label: 'Transfer ID',
+    sortable: true,
+    accessor: (item) => item.id,
+  },
+  {
+    key: 'product',
+    label: 'Product',
+    sortable: true,
+    accessor: (item) => {
+      const product = products.find(p => p.id === item.productId);
+      return product ? `${product.name} (${product.sku})` : 'Unknown';
+    },
+  },
+  {
+    key: 'fromWarehouse',
+    label: 'From Warehouse',
+    sortable: true,
+    accessor: (item) => {
+      const warehouse = warehouses.find(w => w.id === item.fromWarehouseId);
+      return warehouse ? warehouse.name : 'Unknown';
+    },
+  },
+  {
+    key: 'toWarehouse',
+    label: 'To Warehouse',
+    sortable: true,
+    accessor: (item) => {
+      const warehouse = warehouses.find(w => w.id === item.toWarehouseId);
+      return warehouse ? warehouse.name : 'Unknown';
+    },
+  },
+  {
+    key: 'quantity',
+    label: 'Quantity',
+    align: 'right',
+    sortable: true,
+    accessor: (item) => item.quantity,
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    accessor: (item) => item.status,
+    render: (value) => (
+      <Chip 
+        label={value} 
+        color={value === 'completed' ? 'success' : 'warning'} 
+        size="small" 
+      />
+    ),
+  },
+  {
+    key: 'createdAt',
+    label: 'Transfer Date',
+    sortable: true,
+    accessor: (item) => item.createdAt,
+    render: (value) => new Date(value).toLocaleDateString(),
+  },
+  {
+    key: 'notes',
+    label: 'Notes',
+    accessor: (item) => item.notes || '-',
+  },
+];

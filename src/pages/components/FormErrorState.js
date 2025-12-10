@@ -10,6 +10,8 @@ export default function FormErrorState({
   title = "Error Loading Data",
   maxWidth = "sm"
 }) {
+  if (!error) return null;
+  
   return (
     <Container maxWidth={maxWidth} sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>

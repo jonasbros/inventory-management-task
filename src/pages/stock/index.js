@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {
   Container,
   Typography,
@@ -17,6 +18,8 @@ import {
   getStockColumns, 
   getEditAction, 
   getDeleteAction, 
+  getTransferAction,
+  getRequestStockAction,
   getProductFilter,
   getWarehouseFilter
 } from '../../utils/tableColumns';
@@ -34,6 +37,7 @@ export default function Stock() {
   const [selectedStockId, setSelectedStockId] = useState(null);
   
   const { showSuccess, showError } = useNotification();
+  const router = useRouter();
 
   useEffect(() => {
     fetchData();
@@ -74,6 +78,21 @@ export default function Stock() {
     }
   };
 
+  const handleTransfer = (stockRecord) => {
+    const params = new URLSearchParams({
+      productId: stockRecord.productId,
+      fromWarehouseId: stockRecord.warehouseId
+    });
+    router.push(`/transfers/add?${params.toString()}`);
+  };
+
+  const handleRequestStock = (stockRecord) => {
+    const params = new URLSearchParams({
+      productId: stockRecord.productId,
+      toWarehouseId: stockRecord.warehouseId
+    });
+    router.push(`/transfers/add?${params.toString()}`);
+  };
 
   const handleClickOpen = (id) => {
     setSelectedStockId(id);
@@ -148,6 +167,8 @@ export default function Stock() {
           ]}
           actions={[
             getEditAction('/stock/edit/:id'),
+            getTransferAction(handleTransfer),
+            getRequestStockAction(handleRequestStock),
             getDeleteAction(handleClickOpen)
           ]}
           emptyMessage="No stock records available."
