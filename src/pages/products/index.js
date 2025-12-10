@@ -5,14 +5,6 @@ import {
   Container,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -20,11 +12,16 @@ import {
   DialogTitle,
   Box,
 } from '@mui/material';
+import AppTable from '../components/AppTable';
+import { 
+  getProductsColumns, 
+  getEditAction, 
+  getDeleteAction, 
+  getCategoryFilter
+} from '../../utils/tableColumns';
 import { useNotification } from '../../contexts/NotificationContext';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -32,6 +29,8 @@ export default function Products() {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
+  
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     fetchProducts();
@@ -114,55 +113,21 @@ export default function Products() {
           </Button>
         </Box>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>SKU</strong></TableCell>
-                <TableCell><strong>Name</strong></TableCell>
-                <TableCell><strong>Category</strong></TableCell>
-                <TableCell align="right"><strong>Unit Cost</strong></TableCell>
-                <TableCell align="right"><strong>Reorder Point</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>{product.sku}</TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell align="right">${product.unitCost.toFixed(2)}</TableCell>
-                  <TableCell align="right">{product.reorderPoint}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      component={Link}
-                      href={`/products/edit/${product.id}`}
-                      size="small"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleClickOpen(product.id)}
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {products.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    No products available.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <AppTable
+          data={products}
+          columns={getProductsColumns()}
+          title="Products"
+          searchable={true}
+          filterable={true}
+          sortable={true}
+          paginated={true}
+          filters={[getCategoryFilter(products)]}
+          actions={[
+            getEditAction('/products/edit/:id'),
+            getDeleteAction(handleClickOpen)
+          ]}
+          emptyMessage="No products available."
+        />
 
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Delete Product</DialogTitle>

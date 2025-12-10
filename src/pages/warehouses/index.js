@@ -5,14 +5,6 @@ import {
   Container,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -20,8 +12,12 @@ import {
   DialogTitle,
   Box,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import AppTable from '../components/AppTable';
+import { 
+  getWarehousesColumns, 
+  getEditAction, 
+  getDeleteAction
+} from '../../utils/tableColumns';
 import { useNotification } from '../../contexts/NotificationContext';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
@@ -121,51 +117,20 @@ export default function Warehouses() {
           </Button>
         </Box>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Code</strong></TableCell>
-                <TableCell><strong>Name</strong></TableCell>
-                <TableCell><strong>Location</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {warehouses.map((warehouse) => (
-                <TableRow key={warehouse.id}>
-                  <TableCell>{warehouse.code}</TableCell>
-                  <TableCell>{warehouse.name}</TableCell>
-                  <TableCell>{warehouse.location}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      component={Link}
-                      href={`/warehouses/edit/${warehouse.id}`}
-                      size="small"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleClickOpen(warehouse.id)}
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {warehouses.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No warehouses available.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <AppTable
+          data={warehouses}
+          columns={getWarehousesColumns()}
+          title="Warehouses"
+          searchable={true}
+          filterable={true}
+          sortable={true}
+          paginated={true}
+          actions={[
+            getEditAction('/warehouses/edit/:id'),
+            getDeleteAction(handleClickOpen)
+          ]}
+          emptyMessage="No warehouses available."
+        />
 
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Delete Warehouse</DialogTitle>

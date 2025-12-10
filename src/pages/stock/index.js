@@ -5,14 +5,6 @@ import {
   Container,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -20,8 +12,14 @@ import {
   DialogTitle,
   Box,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import AppTable from '../components/AppTable';
+import { 
+  getStockColumns, 
+  getEditAction, 
+  getDeleteAction, 
+  getProductFilter,
+  getWarehouseFilter
+} from '../../utils/tableColumns';
 import { useNotification } from '../../contexts/NotificationContext';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
@@ -76,15 +74,6 @@ export default function Stock() {
     }
   };
 
-  const getProductName = (productId) => {
-    const product = products.find(p => p.id === productId);
-    return product ? `${product.name} (${product.sku})` : 'Unknown';
-  };
-
-  const getWarehouseName = (warehouseId) => {
-    const warehouse = warehouses.find(w => w.id === warehouseId);
-    return warehouse ? `${warehouse.name} (${warehouse.code})` : 'Unknown';
-  };
 
   const handleClickOpen = (id) => {
     setSelectedStockId(id);
@@ -145,51 +134,24 @@ export default function Stock() {
           </Button>
         </Box>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Product</strong></TableCell>
-                <TableCell><strong>Warehouse</strong></TableCell>
-                <TableCell align="right"><strong>Quantity</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {stock.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{getProductName(item.productId)}</TableCell>
-                  <TableCell>{getWarehouseName(item.warehouseId)}</TableCell>
-                  <TableCell align="right">{item.quantity}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      component={Link}
-                      href={`/stock/edit/${item.id}`}
-                      size="small"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleClickOpen(item.id)}
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {stock.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No stock records available.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <AppTable
+          data={stock}
+          columns={getStockColumns(products, warehouses)}
+          title="Stock Levels"
+          searchable={true}
+          filterable={true} 
+          sortable={true}
+          paginated={true}
+          filters={[
+            getProductFilter(products),
+            getWarehouseFilter(warehouses)
+          ]}
+          actions={[
+            getEditAction('/stock/edit/:id'),
+            getDeleteAction(handleClickOpen)
+          ]}
+          emptyMessage="No stock records available."
+        />
 
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Delete Stock Record</DialogTitle>

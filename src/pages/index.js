@@ -12,7 +12,14 @@ import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 import StockLevelChart from './components/charts/StockLevelChart';
 import InventoryValueChart from './components/charts/InventoryValueChart';
 import WarehouseCapacityChart from './components/charts/WarehouseCapacityChart';
-import FilterableInventoryTable from './components/FilterableInventoryTable';
+import AppTable from './components/AppTable';
+import { 
+  getInventoryColumns, 
+  getEditAction, 
+  getRestockAction, 
+  getCategoryFilter,
+  getStatusFilter
+} from '../utils/tableColumns';
 import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
@@ -127,15 +134,23 @@ export default function Home() {
         {/* Left Side - Tables and Bar Chart */}
         <Grid item xs={12} lg={8}>
           {/* Inventory Overview Table */}
-          <FilterableInventoryTable
-            inventoryOverview={inventoryOverview}
-            products={products}
-            warehouses={warehouses}
-            showActions={true}
-            showWarehouse={false}
-            onEdit={handleEditProduct}
-            onRestock={handleRestockProduct}
+          <AppTable
+            data={inventoryOverview}
+            columns={getInventoryColumns(products, warehouses)}
             title="Inventory Overview"
+            searchable={true}
+            filterable={true}
+            sortable={true}
+            paginated={true}
+            filters={[
+              getCategoryFilter(inventoryOverview),
+              getStatusFilter()
+            ]}
+            actions={[
+              getEditAction((item) => `/products/edit/${item.id}`),
+              getRestockAction(handleRestockProduct)
+            ]}
+            emptyMessage="No inventory data available."
           />
 
           {/* Warehouse Capacity Chart */}
