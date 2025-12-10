@@ -90,17 +90,30 @@ export default function InventoryTable({
 
   const SortableTableCell = ({ children, sortKey, align = "left" }) => {
     if (!onSort) {
-      return <TableCell align={align}><strong>{children}</strong></TableCell>;
+      return (
+        <TableCell align={align} sx={{ whiteSpace: 'nowrap', minWidth: 120 }}>
+          <strong>{children}</strong>
+        </TableCell>
+      );
     }
     
     return (
-      <TableCell align={align}>
+      <TableCell align={align} sx={{ whiteSpace: 'nowrap', minWidth: 120 }}>
         <TableSortLabel
           active={sortConfig.key === sortKey}
           direction={sortConfig.key === sortKey ? sortConfig.direction : 'asc'}
           onClick={() => onSort(sortKey)}
+          sx={{
+            flexDirection: 'row',
+            '& .MuiTableSortLabel-icon': {
+              marginLeft: '4px',
+              marginRight: 0
+            }
+          }}
         >
-          <strong>{children}</strong>
+          <Typography variant="body2" component="span" sx={{ fontWeight: 600 }}>
+            {children}
+          </Typography>
         </TableSortLabel>
       </TableCell>
     );
@@ -117,7 +130,11 @@ export default function InventoryTable({
           <SortableTableCell sortKey="stock" align="right">{showWarehouse ? 'Stock' : 'Total Stock'}</SortableTableCell>
           <SortableTableCell sortKey="reorderPoint" align="right">Reorder Point</SortableTableCell>
           <SortableTableCell sortKey="status">Status</SortableTableCell>
-          {showActions && <TableCell><strong>Actions</strong></TableCell>}
+          {showActions && (
+            <TableCell sx={{ whiteSpace: 'nowrap', minWidth: 120 }}>
+              <strong>Actions</strong>
+            </TableCell>
+          )}
         </TableRow>
       </TableHead>
       <TableBody>
