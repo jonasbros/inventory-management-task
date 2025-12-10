@@ -11,7 +11,7 @@ import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-export default function DrawerList() {
+export default function DrawerList({ onItemClick }) {
   const router = useRouter();
 
   const menuItems = [
@@ -43,6 +43,7 @@ export default function DrawerList() {
               key={item.text}
               component={Link} 
               href={item.href}
+              onClick={onItemClick} // Close drawer on mobile after navigation
               sx={{
                 backgroundColor: active ? 'primary.main' : 'transparent',
                 color: active ? 'white' : 'text.primary',
