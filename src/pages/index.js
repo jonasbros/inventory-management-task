@@ -12,8 +12,7 @@ import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 import StockLevelChart from './components/charts/StockLevelChart';
 import InventoryValueChart from './components/charts/InventoryValueChart';
 import WarehouseCapacityChart from './components/charts/WarehouseCapacityChart';
-import InventoryTable from './components/InventoryTable';
-import SearchBox from './components/SearchBox';
+import FilterableInventoryTable from './components/FilterableInventoryTable';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
 import { useDashboardData } from '../hooks/useDashboardData';
 
@@ -21,7 +20,6 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   
   const router = useRouter();
   
@@ -42,12 +40,6 @@ export default function Home() {
   // Process all dashboard data
   const { totalValue, valueByCategory, inventoryOverview, warehouseData } = useDashboardData(products, warehouses, stock);
 
-  // Filter inventory based on search term
-  const filteredInventory = inventoryOverview.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleEditProduct = (item) => {
     router.push(`/products/edit/${item.id}`);
@@ -82,27 +74,16 @@ export default function Home() {
         {/* Left Side - Tables and Bar Chart */}
         <Grid item xs={12} lg={8}>
           {/* Inventory Overview Table */}
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-            Inventory Overview
-          </Typography>
-          
-          <SearchBox
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by product name, SKU, or category..."
+          <FilterableInventoryTable
+            inventoryOverview={inventoryOverview}
+            products={products}
+            warehouses={warehouses}
+            showActions={true}
+            showWarehouse={false}
+            onEdit={handleEditProduct}
+            onRestock={handleRestockProduct}
+            title="Inventory Overview"
           />
-          
-          <TableContainer component={Paper} sx={{ mb: 3 }}>
-            <InventoryTable 
-              data={filteredInventory}
-              products={products}
-              warehouses={warehouses}
-              showActions={true}
-              showWarehouse={false}
-              onEdit={handleEditProduct}
-              onRestock={handleRestockProduct}
-            />
-          </TableContainer>
 
           {/* Warehouse Capacity Chart */}
           <WarehouseCapacityChart 

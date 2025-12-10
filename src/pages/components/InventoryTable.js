@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import EditIcon from '@mui/icons-material/Edit';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 export default function InventoryTable({ 
   data, 
