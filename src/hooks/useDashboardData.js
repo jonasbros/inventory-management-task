@@ -15,10 +15,14 @@ export function useDashboardData(products, warehouses, stock) {
     // Get products with stock across all warehouses
     const inventoryOverview = createInventoryOverview(products, stock);
 
+    // Calculate warehouse capacity data
+    const warehouseData = calculateWarehouseCapacity(warehouses, stock);
+
     return {
       totalValue,
       valueByCategory,
-      inventoryOverview
+      inventoryOverview,
+      warehouseData
     };
   }, [products, warehouses, stock]);
 }
@@ -89,4 +93,21 @@ function findLowestStockWarehouse(productStock) {
     }
     return lowest;
   }, null);
+}
+
+// Helper function: Calculate warehouse capacity overview
+function calculateWarehouseCapacity(warehouses, stock) {
+  return warehouses.map(warehouse => {
+    const warehouseStock = stock.filter(s => s.warehouseId === warehouse.id);
+    const totalStock = warehouseStock.reduce((sum, s) => sum + s.quantity, 0);
+    const productCount = warehouseStock.length;
+    
+    return {
+      name: warehouse.name,
+      location: warehouse.location,
+      totalStock,
+      productCount,
+      warehouseId: warehouse.id
+    };
+  }).sort((a, b) => b.totalStock - a.totalStock); // Sort by stock level descending
 }

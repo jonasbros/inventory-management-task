@@ -7,6 +7,7 @@ import {
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
 import StockLevelChart from './components/charts/StockLevelChart';
 import InventoryValueChart from './components/charts/InventoryValueChart';
+import WarehouseCapacityChart from './components/charts/WarehouseCapacityChart';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
 import { useDashboardData } from '../hooks/useDashboardData';
 
@@ -30,7 +31,7 @@ export default function Home() {
   }, []);
 
   // Process all dashboard data
-  const { totalValue, valueByCategory, inventoryOverview } = useDashboardData(products, warehouses, stock);
+  const { totalValue, valueByCategory, inventoryOverview, warehouseData } = useDashboardData(products, warehouses, stock);
 
 
   return (
@@ -61,6 +62,11 @@ export default function Home() {
           <InventoryValueChart 
             valueByCategory={valueByCategory}
             totalValue={totalValue}
+          />
+        </Grid>
+        <Grid item xs={12} md={12} lg={6}>
+          <WarehouseCapacityChart 
+            warehouseData={warehouseData}
           />
         </Grid>
       </Grid>
