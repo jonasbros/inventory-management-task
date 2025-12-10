@@ -19,35 +19,61 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
-  CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { useNotification } from '../../contexts/NotificationContext';
+import LoadingState from '../components/LoadingState';
+import ErrorState from '../components/ErrorState';
 
 export default function Stock() {
   const [stock, setStock] = useState([]);
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedStockId, setSelectedStockId] = useState(null);
+  
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = () => {
-    Promise.all([
-      fetch('/api/stock').then(res => res.json()),
-      fetch('/api/products').then(res => res.json()),
-      fetch('/api/warehouses').then(res => res.json()),
-    ]).then(([stockData, productsData, warehousesData]) => {
+  const fetchData = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const responses = await Promise.all([
+        fetch('/api/stock'),
+        fetch('/api/products'),
+        fetch('/api/warehouses'),
+      ]);
+
+      responses.forEach((response, index) => {
+        if (!response.ok) {
+          const endpoints = ['stock', 'products', 'warehouses'];
+          throw new Error(`Failed to load ${endpoints[index]}: ${response.status} ${response.statusText}`);
+        }
+      });
+
+      const [stockData, productsData, warehousesData] = await Promise.all(
+        responses.map(res => res.json())
+      );
+
       setStock(stockData);
       setProducts(productsData);
       setWarehouses(warehousesData);
-    }).finally(() => {
+    } catch (err) {
+      console.error('Stock data fetch error:', err);
+      const errorMessage = err.message || 'Failed to load stock data. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   const getProductName = (productId) => {
@@ -78,31 +104,23 @@ export default function Stock() {
 
       if (res.ok) {
         setStock(stock.filter((item) => item.id !== selectedStockId));
+        showSuccess('Stock record deleted successfully');
         handleClose();
+      } else {
+        throw new Error(`Failed to delete stock record: ${res.status} ${res.statusText}`);
       }
     } catch (error) {
       console.error('Error deleting stock:', error);
+      showError(error.message || 'Failed to delete stock record. Please try again.');
     }
   };
 
   if (loading) {
-    return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: 'calc(100vh - 64px)',
-          flexDirection: 'column',
-          gap: 2
-        }}
-      >
-        <CircularProgress size={48} />
-        <Typography variant="body1" color="text.secondary">
-          Loading stock data...
-        </Typography>
-      </Box>
-    );
+    return <LoadingState message="Loading stock data..." />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} onRetry={fetchData} title="Error Loading Stock Data" />;
   }
 
   return (

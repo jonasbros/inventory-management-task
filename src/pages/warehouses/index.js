@@ -19,26 +19,47 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
-  CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { useNotification } from '../../contexts/NotificationContext';
+import LoadingState from '../components/LoadingState';
+import ErrorState from '../components/ErrorState';
 
 export default function Warehouses() {
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
+  
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     fetchWarehouses();
   }, []);
 
-  const fetchWarehouses = () => {
-    fetch('/api/warehouses')
-      .then((res) => res.json())
-      .then((data) => setWarehouses(data))
-      .finally(() => setLoading(false));
+  const fetchWarehouses = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const res = await fetch('/api/warehouses');
+      
+      if (!res.ok) {
+        throw new Error(`Failed to load warehouses: ${res.status} ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      setWarehouses(data);
+    } catch (err) {
+      console.error('Warehouses fetch error:', err);
+      const errorMessage = err.message || 'Failed to load warehouses. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickOpen = (id) => {
@@ -59,31 +80,23 @@ export default function Warehouses() {
 
       if (res.ok) {
         setWarehouses(warehouses.filter((warehouse) => warehouse.id !== selectedWarehouseId));
+        showSuccess('Warehouse deleted successfully');
         handleClose();
+      } else {
+        throw new Error(`Failed to delete warehouse: ${res.status} ${res.statusText}`);
       }
     } catch (error) {
       console.error('Error deleting warehouse:', error);
+      showError(error.message || 'Failed to delete warehouse. Please try again.');
     }
   };
 
   if (loading) {
-    return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: 'calc(100vh - 64px)',
-          flexDirection: 'column',
-          gap: 2
-        }}
-      >
-        <CircularProgress size={48} />
-        <Typography variant="body1" color="text.secondary">
-          Loading warehouses...
-        </Typography>
-      </Box>
-    );
+    return <LoadingState message="Loading warehouses..." />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} onRetry={fetchWarehouses} title="Error Loading Warehouses" />;
   }
 
   return (

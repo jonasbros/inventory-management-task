@@ -9,7 +9,9 @@ import {
   Box,
   Paper,
   CircularProgress,
+  Alert,
 } from '@mui/material';
+import { useNotification } from '../../contexts/NotificationContext';
 
 export default function AddProduct() {
   const [product, setProduct] = useState({
@@ -20,8 +22,10 @@ export default function AddProduct() {
     reorderPoint: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const router = useRouter();
+  const { showSuccess, showError } = useNotification();
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
@@ -30,6 +34,7 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setError(null);
     
     try {
       const res = await fetch('/api/products', {
@@ -41,9 +46,19 @@ export default function AddProduct() {
           reorderPoint: parseInt(product.reorderPoint),
         }),
       });
-      if (res.ok) {
-        router.push('/products');
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Failed to add product: ${res.status} ${res.statusText}`);
       }
+      
+      showSuccess('Product added successfully! Redirecting...');
+      setTimeout(() => router.push('/products'), 1500);
+    } catch (err) {
+      console.error('Add product error:', err);
+      const errorMessage = err.message || 'Failed to add product. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -56,6 +71,13 @@ export default function AddProduct() {
           <Typography variant="h4" component="h1" gutterBottom>
             Add New Product
           </Typography>
+          
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
+          
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
             <TextField
               margin="normal"

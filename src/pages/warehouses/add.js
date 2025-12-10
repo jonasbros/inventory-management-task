@@ -8,7 +8,10 @@ import {
   Button,
   Box,
   Paper,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
+import { useNotification } from '../../contexts/NotificationContext';
 
 export default function AddWarehouse() {
   const [warehouse, setWarehouse] = useState({
@@ -16,8 +19,11 @@ export default function AddWarehouse() {
     location: '',
     code: '',
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const router = useRouter();
+  const { showSuccess, showError } = useNotification();
 
   const handleChange = (e) => {
     setWarehouse({ ...warehouse, [e.target.name]: e.target.value });
@@ -25,13 +31,30 @@ export default function AddWarehouse() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/warehouses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(warehouse),
-    });
-    if (res.ok) {
-      router.push('/warehouses');
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/warehouses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(warehouse),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Failed to add warehouse: ${res.status} ${res.statusText}`);
+      }
+      
+      showSuccess('Warehouse added successfully!');
+      setTimeout(() => router.push('/warehouses'), 1500); // Show success then redirect
+    } catch (err) {
+      console.error('Add warehouse error:', err);
+      const errorMessage = err.message || 'Failed to add warehouse. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -42,6 +65,13 @@ export default function AddWarehouse() {
           <Typography variant="h4" component="h1" gutterBottom>
             Add New Warehouse
           </Typography>
+          
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
+          
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
             <TextField
               margin="normal"
@@ -76,8 +106,10 @@ export default function AddWarehouse() {
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={submitting}
+                startIcon={submitting ? <CircularProgress size={20} /> : null}
               >
-                Add Warehouse
+                {submitting ? 'Adding...' : 'Add Warehouse'}
               </Button>
               <Button
                 fullWidth

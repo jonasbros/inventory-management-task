@@ -19,14 +19,17 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
-  CircularProgress,
 } from '@mui/material';
+import { useNotification } from '../../contexts/NotificationContext';
+import LoadingState from '../components/LoadingState';
+import ErrorState from '../components/ErrorState';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
 
@@ -34,11 +37,26 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-  const fetchProducts = () => {
-    fetch('/api/products')
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .finally(() => setLoading(false));
+  const fetchProducts = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const res = await fetch('/api/products');
+      if (!res.ok) {
+        throw new Error(`Failed to load products: ${res.status} ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      console.error('Products fetch error:', err);
+      const errorMessage = err.message || 'Failed to load products. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickOpen = (id) => {
@@ -67,23 +85,11 @@ export default function Products() {
   };
 
   if (loading) {
-    return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: 'calc(100vh - 64px)',
-          flexDirection: 'column',
-          gap: 2
-        }}
-      >
-        <CircularProgress size={48} />
-        <Typography variant="body1" color="text.secondary">
-          Loading products...
-        </Typography>
-      </Box>
-    );
+    return <LoadingState message="Loading products..." />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} onRetry={fetchProducts} title="Error Loading Products" />;
   }
 
   return (

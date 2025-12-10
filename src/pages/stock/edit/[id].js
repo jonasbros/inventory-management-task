@@ -10,7 +10,11 @@ import {
   Paper,
   MenuItem,
   CircularProgress,
+  Alert,
 } from '@mui/material';
+import { useNotification } from '../../../contexts/NotificationContext';
+import LoadingState from '../../components/LoadingState';
+import FormErrorState from '../../components/FormErrorState';
 
 export default function EditStock() {
   const [stock, setStock] = useState({
@@ -21,25 +25,57 @@ export default function EditStock() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [loadError, setLoadError] = useState(null);
   const [isRestockMode, setIsRestockMode] = useState(false);
   const [originalQuantity, setOriginalQuantity] = useState(0);
   const [restockAmount, setRestockAmount] = useState('');
 
   const router = useRouter();
   const { id } = router.query;
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     if (id) {
-      Promise.all([
-        fetch(`/api/stock/${id}`).then(res => res.json()),
-        fetch('/api/products').then(res => res.json()),
-        fetch('/api/warehouses').then(res => res.json()),
-      ]).then(([stockData, productsData, warehousesData]) => {
-        setStock(stockData);
-        setProducts(productsData);
-        setWarehouses(warehousesData);
-        setLoading(false);
-      });
+      const loadData = async () => {
+        try {
+          const [stockRes, productsRes, warehousesRes] = await Promise.all([
+            fetch(`/api/stock/${id}`),
+            fetch('/api/products'),
+            fetch('/api/warehouses')
+          ]);
+          
+          if (!stockRes.ok) {
+            throw new Error(`Failed to load stock record: ${stockRes.status} ${stockRes.statusText}`);
+          }
+          if (!productsRes.ok) {
+            throw new Error(`Failed to load products: ${productsRes.status} ${productsRes.statusText}`);
+          }
+          if (!warehousesRes.ok) {
+            throw new Error(`Failed to load warehouses: ${warehousesRes.status} ${warehousesRes.statusText}`);
+          }
+          
+          const [stockData, productsData, warehousesData] = await Promise.all([
+            stockRes.json(),
+            productsRes.json(),
+            warehousesRes.json()
+          ]);
+          
+          setStock(stockData);
+          setProducts(productsData);
+          setWarehouses(warehousesData);
+        } catch (err) {
+          console.error('Load data error:', err);
+          const errorMessage = err.message || 'Failed to load data. Please try again.';
+          setLoadError(errorMessage);
+          showError(errorMessage);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      loadData();
     }
   }, [id]);
 
@@ -74,26 +110,87 @@ export default function EditStock() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/stock/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        productId: parseInt(stock.productId),
-        warehouseId: parseInt(stock.warehouseId),
-        quantity: parseInt(stock.quantity),
-      }),
-    });
-    if (res.ok) {
-      router.push('/stock');
+    setSubmitting(true);
+    setError(null);
+    
+    try {
+      const res = await fetch(`/api/stock/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: parseInt(stock.productId),
+          warehouseId: parseInt(stock.warehouseId),
+          quantity: parseInt(stock.quantity),
+        }),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Failed to update stock: ${res.status} ${res.statusText}`);
+      }
+      
+      showSuccess(isRestockMode ? 'Inventory restocked successfully!' : 'Stock record updated successfully!');
+      setTimeout(() => router.push('/stock'), 1500); // Show success then redirect
+    } catch (err) {
+      console.error('Update stock error:', err);
+      const errorMessage = err.message || 'Failed to update stock record. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  const handleRetry = () => {
+    setLoadError(null);
+    setLoading(true);
+    
+    const loadData = async () => {
+      try {
+        const [stockRes, productsRes, warehousesRes] = await Promise.all([
+          fetch(`/api/stock/${id}`),
+          fetch('/api/products'),
+          fetch('/api/warehouses')
+        ]);
+        
+        if (!stockRes.ok) {
+          throw new Error(`Failed to load stock record: ${stockRes.status} ${stockRes.statusText}`);
+        }
+        if (!productsRes.ok) {
+          throw new Error(`Failed to load products: ${productsRes.status} ${productsRes.statusText}`);
+        }
+        if (!warehousesRes.ok) {
+          throw new Error(`Failed to load warehouses: ${warehousesRes.status} ${warehousesRes.statusText}`);
+        }
+        
+        const [stockData, productsData, warehousesData] = await Promise.all([
+          stockRes.json(),
+          productsRes.json(),
+          warehousesRes.json()
+        ]);
+        
+        setStock(stockData);
+        setProducts(productsData);
+        setWarehouses(warehousesData);
+      } catch (err) {
+        console.error('Retry load data error:', err);
+        const errorMessage = err.message || 'Failed to load data. Please try again.';
+        setLoadError(errorMessage);
+        showError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  };
+  
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingState message="Loading stock record..." minHeight="100vh" />;
+  }
+  
+  if (loadError) {
+    return <FormErrorState error={loadError} onRetry={handleRetry} title="Error Loading Stock Data" />;
   }
 
   return (
@@ -103,6 +200,12 @@ export default function EditStock() {
           <Typography variant="h4" component="h1" gutterBottom>
             {isRestockMode ? 'Restock Inventory' : 'Edit Stock Record'}
           </Typography>
+          
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
           {isRestockMode && (
             <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.50', borderRadius: 1, border: '1px solid', borderColor: 'primary.200' }}>
               <Typography variant="body2" color="text.secondary">
@@ -192,8 +295,10 @@ export default function EditStock() {
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={submitting}
+                startIcon={submitting ? <CircularProgress size={20} /> : null}
               >
-                {isRestockMode ? 'Add to Inventory' : 'Update Stock'}
+                {submitting ? (isRestockMode ? 'Adding...' : 'Updating...') : (isRestockMode ? 'Add to Inventory' : 'Update Stock')}
               </Button>
               <Button
                 fullWidth

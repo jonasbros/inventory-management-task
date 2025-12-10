@@ -6,8 +6,6 @@ import {
   Grid,
   Paper,
   Box,
-  TableContainer,
-  CircularProgress,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
@@ -15,31 +13,61 @@ import StockLevelChart from './components/charts/StockLevelChart';
 import InventoryValueChart from './components/charts/InventoryValueChart';
 import WarehouseCapacityChart from './components/charts/WarehouseCapacityChart';
 import FilterableInventoryTable from './components/FilterableInventoryTable';
+import LoadingState from './components/LoadingState';
+import ErrorState from './components/ErrorState';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   const router = useRouter();
+  const { showError } = useNotification();
   
 
-  useEffect(() => {
-    // Fetch all data
-    Promise.all([
-      fetch('/api/products').then(res => res.json()),
-      fetch('/api/warehouses').then(res => res.json()),
-      fetch('/api/stock').then(res => res.json()),
-    ]).then(([productsData, warehousesData, stockData]) => {
+  const fetchData = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+
+      const responses = await Promise.all([
+        fetch('/api/products'),
+        fetch('/api/warehouses'),
+        fetch('/api/stock'),
+      ]);
+
+      // Check for HTTP errors
+      responses.forEach((response, index) => {
+        if (!response.ok) {
+          const endpoints = ['products', 'warehouses', 'stock'];
+          throw new Error(`Failed to load ${endpoints[index]}: ${response.status} ${response.statusText}`);
+        }
+      });
+
+      const [productsData, warehousesData, stockData] = await Promise.all(
+        responses.map(res => res.json())
+      );
+
       setProducts(productsData);
       setWarehouses(warehousesData);
       setStock(stockData);
-    }).finally(() => {
+    } catch (err) {
+      console.error('Dashboard data fetch error:', err);
+      const errorMessage = err.message || 'Failed to load dashboard data. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
       setLoading(false);
-    });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   // Process all dashboard data
@@ -60,22 +88,16 @@ export default function Home() {
 
 
   if (loading) {
+    return <LoadingState message="Loading dashboard..." />;
+  }
+
+  if (error) {
     return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: 'calc(100vh - 64px)',
-          flexDirection: 'column',
-          gap: 2
-        }}
-      >
-        <CircularProgress size={48} />
-        <Typography variant="body1" color="text.secondary">
-          Loading dashboard...
-        </Typography>
-      </Box>
+      <ErrorState 
+        error={error}
+        onRetry={fetchData}
+        title="Error Loading Dashboard"
+      />
     );
   }
 
