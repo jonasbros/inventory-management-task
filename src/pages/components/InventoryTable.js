@@ -143,10 +143,7 @@ export default function InventoryTable({
           const warehouse = warehouses?.find(w => w.id === item.warehouseId);
           
           return (
-            <TableRow 
-              key={showWarehouse ? `${item.productId}-${item.warehouseId}` : item.id}
-              sx={{ backgroundColor: getRowBackgroundColor(item) }}
-            >
+            <TableRow key={showWarehouse ? `${item.productId}-${item.warehouseId}` : item.id}>
               <TableCell>{product?.sku}</TableCell>
               <TableCell>{product?.name}</TableCell>
               <TableCell>{product?.category}</TableCell>
