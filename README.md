@@ -281,7 +281,7 @@ Good luck! 💪
   - For unit testing, wanted to do it since this has a lot moving parts and data/calculations have to be precise, but I didn't have enough time
 
 - **Video walkthrough link**
-  - [\[Link\]](https://www.youtube.com/watch?v=WYD7awgRvP8)
+  - https://www.youtube.com/watch?v=WYD7awgRvP8
 
 - **Any new dependencies added**
   - Recharts
