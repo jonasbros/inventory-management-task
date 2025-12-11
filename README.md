@@ -242,3 +242,46 @@ Good luck! 💪
 ---
 
 **Setup issues?** Verify Node.js is installed and you're using a modern browser. If problems persist, document them in your submission.
+
+
+## JONAS' DOCUMENTATION
+
+- **Name: Jonas Perez**
+- **Completion Time:** 18~ hrs
+
+- **Features completed**
+  - Added key business metrics from existing data
+  - Redesigned dashboard
+  - Added charts for visualization
+  - Improved inventory system usability
+  - Search and filtering
+  - Responsive design
+  - Loading/error state handling
+  - Alert and transfer system
+  - Restocking
+
+- **Key technical decisions**
+  - Used existing data/structure to add additional metrics
+  - Alerts are generated on page load from existing data, not saved to DB
+  - Only store alert interactions (acknowledge/snooze/resolve), not alerts themselves
+  - Stock level thresholds: 
+    - 0 stock = critical
+    - stock below 50% = critical
+    - stock below reorder point = low
+  - Data calculated on load, no cache
+
+- **Known limitations**
+  - Calculations are done on frontend, would tank performance on larger data
+  - No caching frontend and backend
+  - No background jobs, realtime updates, alerts are only recalculated on page reload
+  - All data is loaded at once for calculations
+
+- **Testing instructions**
+  - `npm run install && npm run dev`
+  - For unit testing, wanted to do it since this has a lot moving parts and data/calculations have to be precise, but I didn't have enough time
+
+- **Video walkthrough link**
+  - [Link]
+
+- **Any new dependencies added**
+  - Recharts
