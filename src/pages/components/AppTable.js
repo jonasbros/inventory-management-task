@@ -139,6 +139,10 @@ export default function AppTable({
 
   // Generate filter options
   const getFilterOptions = (filterConfig) => {
+    if (!filterConfig.accessor || typeof filterConfig.accessor !== 'function') {
+      return [{ value: 'all', label: 'All' }];
+    }
+    
     const uniqueValues = [...new Set(
       data.map(item => filterConfig.accessor(item)).filter(Boolean)
     )].sort();
@@ -281,14 +285,29 @@ export default function AppTable({
                 }}
               >
                 {columns.map((column) => {
-                  const value = column.accessor ? column.accessor(item) : item[column.key];
+                  let value;
+                  try {
+                    value = column.accessor ? column.accessor(item) : item[column.key];
+                  } catch (error) {
+                    console.error('Error accessing column value:', error, column, item);
+                    value = '';
+                  }
+                  
+                  let displayValue;
+                  try {
+                    displayValue = column.render ? column.render(value, item) : value;
+                  } catch (error) {
+                    console.error('Error rendering column:', error, column, value, item);
+                    displayValue = String(value || '');
+                  }
+                  
                   return (
                     <TableCell 
                       key={column.key} 
                       align={column.align || 'left'}
                       sx={column.cellSx}
                     >
-                      {column.render ? column.render(value, item) : value}
+                      {displayValue !== null && displayValue !== undefined ? displayValue : '-'}
                     </TableCell>
                   );
                 })}

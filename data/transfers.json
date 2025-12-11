@@ -31,5 +31,16 @@
     "status": "completed",
     "createdAt": "2025-12-10T17:29:02.001Z",
     "completedAt": "2025-12-10T17:29:02.001Z"
+  },
+  {
+    "id": "evf1tcdwa",
+    "productId": 1,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 2,
+    "quantity": 25,
+    "notes": "test123",
+    "status": "completed",
+    "createdAt": "2025-12-11T05:57:51.939Z",
+    "completedAt": "2025-12-11T05:57:51.939Z"
   }
 ]

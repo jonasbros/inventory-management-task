@@ -3,25 +3,25 @@
     "id": 1,
     "productId": 1,
     "warehouseId": 1,
-    "quantity": 250
+    "quantity": 25
   },
   {
     "id": 2,
     "productId": 1,
     "warehouseId": 2,
-    "quantity": 150
+    "quantity": 25
   },
   {
     "id": 3,
     "productId": 2,
     "warehouseId": 1,
-    "quantity": 1200
+    "quantity": 600
   },
   {
     "id": 4,
     "productId": 2,
     "warehouseId": 3,
-    "quantity": 800
+    "quantity": 520
   },
   {
     "id": 5,
@@ -51,13 +51,52 @@
     "id": 9,
     "productId": 5,
     "warehouseId": 2,
-    "quantity": 450
+    "quantity": 0
   },
   {
     "id": 10,
     "productId": 5,
     "warehouseId": 3,
-    "quantity": 700
+    "quantity": 0
+  },
+  {
+    "productId": 2,
+    "warehouseId": 3,
+    "quantity": 69,
+    "id": 11
+  },
+  {
+    "productId": 2,
+    "warehouseId": 1,
+    "quantity": 200,
+    "id": 12
+  },
+  {
+    "productId": 2,
+    "warehouseId": 3,
+    "quantity": 200,
+    "id": 13
+  },
+  {
+    "productId": 6,
+    "warehouseId": 4,
+    "quantity": 86,
+    "id": 14
+  },
+  {
+    "id": "c8perxkh2",
+    "productId": 6,
+    "warehouseId": 3,
+    "quantity": 25,
+    "minThreshold": 10,
+    "maxThreshold": 1000
+  },
+  {
+    "id": "tfdmji18p",
+    "productId": 6,
+    "warehouseId": 1,
+    "quantity": 12,
+    "minThreshold": 10,
+    "maxThreshold": 1000
   }
 ]
-

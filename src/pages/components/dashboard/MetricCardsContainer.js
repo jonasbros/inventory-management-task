@@ -8,6 +8,7 @@ import WarehouseIcon from '@mui/icons-material/Warehouse';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { useDashboardMetrics } from '../../../hooks/useDashboardMetrics';
 
 export default function MetricCardsContainer({ 
@@ -15,7 +16,8 @@ export default function MetricCardsContainer({
   warehouses, 
   stock, 
   totalValue, 
-  inventoryOverview 
+  inventoryOverview,
+  alertData
 }) {
   const metrics = useDashboardMetrics(products, warehouses, stock, inventoryOverview);
   const [modalOpen, setModalOpen] = useState(false);
@@ -37,6 +39,20 @@ export default function MetricCardsContainer({
       data: outOfStockIncidents
     });
     setModalOpen(true);
+  };
+
+  const handleCriticalAlertsClick = () => {
+    const criticalAlerts = alertData?.alerts?.filter(alert => alert.severity === 'critical') || [];
+    setModalData({
+      title: 'Critical Stock Alerts',
+      data: criticalAlerts
+    });
+    setModalOpen(true);
+  };
+
+  const handleActiveAlertsClick = () => {
+    // Navigate to alerts page instead of showing modal
+    window.location.href = '/alerts';
   };
 
   return (
@@ -67,21 +83,31 @@ export default function MetricCardsContainer({
 
       <Grid item xs={12} sm={6} md={3}>
         <MetricCard
-          title="Low Stock Alerts"
-          value={`${metrics.lowStockCount} products`}
-          icon={WarningIcon}
-          iconColor="warning.main"
-          valueColor={metrics.lowStockCount > 0 ? 'warning.main' : 'text.primary'}
-          subtitle={metrics.warehouseLowStockCount > 0 ? `${metrics.warehouseLowStockCount} warehouses affected` : "All warehouses healthy"}
-          subtitleColor={metrics.warehouseLowStockCount > 0 ? "warning.main" : "success.main"}
+          title="Stock Alerts"
+          value={`${alertData?.alertSummary?.totalAlerts || 0} active`}
+          icon={NotificationsActiveIcon}
+          iconColor={alertData?.criticalCount > 0 ? "error.main" : alertData?.lowStockCount > 0 ? "warning.main" : "success.main"}
+          valueColor={alertData?.criticalCount > 0 ? 'error.main' : alertData?.lowStockCount > 0 ? 'warning.main' : 'success.main'}
+          subtitle={
+            alertData?.criticalCount > 0 
+              ? `${alertData.criticalCount} critical alerts` 
+              : alertData?.lowStockCount > 0 
+                ? `${alertData.lowStockCount} low stock alerts`
+                : "All inventory healthy"
+          }
+          subtitleColor={
+            alertData?.criticalCount > 0 ? "error.main" 
+            : alertData?.lowStockCount > 0 ? "warning.main" 
+            : "success.main"
+          }
           clickable={true}
-          onClick={handleLowStockClick}
+          onClick={handleActiveAlertsClick}
           chip={
-            <Tooltip title="Products with stock below 50% of reorder point at specific warehouses - immediate attention required">
+            <Tooltip title="Critical alerts require immediate attention - products below 50% of reorder point or out of stock">
               <Chip 
-                label={`${metrics.criticalStockCount} critical`} 
+                label={`${alertData?.criticalCount || 0} critical`} 
                 size="small" 
-                color={metrics.criticalStockCount > 0 ? "error" : "default"}
+                color={alertData?.criticalCount > 0 ? "error" : "default"}
                 variant="outlined"
               />
             </Tooltip>

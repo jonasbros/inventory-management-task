@@ -1,7 +1,10 @@
-import { Chip, Button } from '@mui/material';
+import { Chip, Button, Tooltip, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Link from 'next/link';
 
 // Helper function to get status chip for inventory items
@@ -76,12 +79,30 @@ export const getProductsColumns = (onEdit, onDelete) => [
 // Stock table columns
 export const getStockColumns = (products = [], warehouses = [], onEdit, onDelete) => [
   {
-    key: 'product',
-    label: 'Product',
+    key: 'sku',
+    label: 'SKU',
     sortable: true,
     accessor: (item) => {
       const product = products.find(p => p.id === item.productId);
-      return product ? `${product.name} (${product.sku})` : 'Unknown';
+      return product ? product.sku : 'Unknown';
+    },
+  },
+  {
+    key: 'product',
+    label: 'Product Name',
+    sortable: true,
+    accessor: (item) => {
+      const product = products.find(p => p.id === item.productId);
+      return product ? product.name : 'Unknown';
+    },
+  },
+  {
+    key: 'category',
+    label: 'Category',
+    sortable: true,
+    accessor: (item) => {
+      const product = products.find(p => p.id === item.productId);
+      return product ? product.category : 'Unknown';
     },
   },
   {
@@ -90,15 +111,48 @@ export const getStockColumns = (products = [], warehouses = [], onEdit, onDelete
     sortable: true,
     accessor: (item) => {
       const warehouse = warehouses.find(w => w.id === item.warehouseId);
-      return warehouse ? `${warehouse.name} (${warehouse.code})` : 'Unknown';
+      return warehouse ? warehouse.name : 'Unknown';
     },
   },
   {
     key: 'quantity',
-    label: 'Quantity',
+    label: 'Stock',
     align: 'right',
     sortable: true,
-    accessor: (item) => item.quantity,
+    accessor: (item) => item.quantity?.toLocaleString(),
+  },
+  {
+    key: 'reorderPoint',
+    label: 'Reorder Point',
+    align: 'right',
+    sortable: true,
+    accessor: (item) => {
+      const product = products.find(p => p.id === item.productId);
+      return product ? product.reorderPoint?.toLocaleString() : 'Unknown';
+    },
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    accessor: (item) => {
+      const product = products.find(p => p.id === item.productId);
+      if (!product) return 'Unknown';
+      
+      if (item.quantity === 0) return 'Out of Stock';
+      if (item.quantity < product.reorderPoint * 0.5) return 'Critical';
+      if (item.quantity < product.reorderPoint) return 'Low Stock';
+      return 'In Stock';
+    },
+    render: (value, item) => {
+      const product = products.find(p => p.id === item.productId);
+      return getInventoryStatusChip({ 
+        isOutOfStock: item.quantity === 0,
+        isCriticalStock: product && item.quantity < product.reorderPoint * 0.5,
+        isLowStock: product && item.quantity < product.reorderPoint,
+        totalQuantity: item.quantity 
+      }, product);
+    },
   },
 ];
 
@@ -124,8 +178,57 @@ export const getWarehousesColumns = (onEdit, onDelete) => [
   },
 ];
 
+// Helper function to get alert indicator
+export const getAlertIndicator = (item, alertData) => {
+  if (!alertData || !alertData.allAlerts) return null;
+  
+  const alert = alertData.allAlerts.find(a => a.productId === item.id);
+  if (!alert || alert.severity === 'adequate' || alert.isDismissed) return null;
+
+  const getIcon = () => {
+    switch (alert.severity) {
+      case 'critical':
+        return <ErrorIcon fontSize="small" />;
+      case 'low':
+        return <WarningIcon fontSize="small" />;
+      case 'overstocked':
+        return <NotificationsActiveIcon fontSize="small" />;
+      default:
+        return null;
+    }
+  };
+
+  const getColor = () => {
+    switch (alert.severity) {
+      case 'critical':
+        return 'error.main';
+      case 'low':
+        return 'warning.main';
+      case 'overstocked':
+        return 'info.main';
+      default:
+        return 'default';
+    }
+  };
+
+  return (
+    <Tooltip title={alert.recommendedAction}>
+      <Box sx={{ color: getColor(), display: 'flex', alignItems: 'center' }}>
+        {getIcon()}
+      </Box>
+    </Tooltip>
+  );
+};
+
 // Inventory overview columns (for dashboard)
-export const getInventoryColumns = (products = [], warehouses = [], onEdit, onRestock) => [
+export const getInventoryColumns = (products = [], warehouses = [], alertData = null) => [
+  {
+    key: 'alert',
+    label: 'Alert',
+    sortable: false,
+    accessor: () => '',
+    render: (value, item) => getAlertIndicator(item, alertData),
+  },
   {
     key: 'sku',
     label: 'SKU',
@@ -149,14 +252,14 @@ export const getInventoryColumns = (products = [], warehouses = [], onEdit, onRe
     label: 'Total Stock',
     align: 'right',
     sortable: true,
-    accessor: (item) => item.totalQuantity,
+    accessor: (item) => item.totalQuantity?.toLocaleString(),
   },
   {
     key: 'reorderPoint',
     label: 'Reorder Point',
     align: 'right',
     sortable: true,
-    accessor: (item) => item.reorderPoint,
+    accessor: (item) => item.reorderPoint?.toLocaleString(),
   },
   {
     key: 'status',

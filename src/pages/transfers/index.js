@@ -76,7 +76,7 @@ export default function Transfers() {
         <meta name="description" content="View and manage inventory transfers between warehouses" />
       </Head>
       
-      <Container sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
             Stock Transfers

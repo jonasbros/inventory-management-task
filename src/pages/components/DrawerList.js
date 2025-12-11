@@ -9,6 +9,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import BusinessIcon from '@mui/icons-material/Business';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -21,6 +22,7 @@ export default function DrawerList({ onItemClick }) {
     { text: 'Warehouses', href: '/warehouses', icon: BusinessIcon },
     { text: 'Stock Levels', href: '/stock', icon: AssessmentIcon },
     { text: 'Stock Transfers', href: '/transfers', icon: SwapHorizIcon },
+    { text: 'Stock Alerts', href: '/alerts', icon: NotificationsActiveIcon },
   ];
 
   const isActive = (href) => {

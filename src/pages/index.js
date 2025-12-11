@@ -24,12 +24,14 @@ import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { useAlertData } from '../hooks/useAlertData';
 import { useNotification } from '../contexts/NotificationContext';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [stock, setStock] = useState([]);
+  const [alertActions, setAlertActions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -46,23 +48,25 @@ export default function Home() {
         fetch('/api/products'),
         fetch('/api/warehouses'),
         fetch('/api/stock'),
+        fetch('/api/alerts'),
       ]);
 
       // Check for HTTP errors
       responses.forEach((response, index) => {
         if (!response.ok) {
-          const endpoints = ['products', 'warehouses', 'stock'];
+          const endpoints = ['products', 'warehouses', 'stock', 'alerts'];
           throw new Error(`Failed to load ${endpoints[index]}: ${response.status} ${response.statusText}`);
         }
       });
 
-      const [productsData, warehousesData, stockData] = await Promise.all(
+      const [productsData, warehousesData, stockData, alertActionsData] = await Promise.all(
         responses.map(res => res.json())
       );
 
       setProducts(productsData);
       setWarehouses(warehousesData);
       setStock(stockData);
+      setAlertActions(alertActionsData);
     } catch (err) {
       console.error('Dashboard data fetch error:', err);
       const errorMessage = err.message || 'Failed to load dashboard data. Please try again.';
@@ -80,6 +84,7 @@ export default function Home() {
   // Process all dashboard data
   const { totalValue, valueByCategory, inventoryOverview, warehouseData } = useDashboardData(products, warehouses, stock);
   const dashboardMetrics = useDashboardMetrics(products, warehouses, stock, inventoryOverview);
+  const alertData = useAlertData(products, stock, warehouses, alertActions);
 
   const handleEditProduct = (item) => {
     router.push(`/products/edit/${item.id}`);
@@ -127,6 +132,7 @@ export default function Home() {
         stock={stock}
         totalValue={totalValue}
         inventoryOverview={inventoryOverview}
+        alertData={alertData}
       />
 
       {/* Main Content Section */}
@@ -136,7 +142,7 @@ export default function Home() {
           {/* Inventory Overview Table */}
           <AppTable
             data={inventoryOverview}
-            columns={getInventoryColumns(products, warehouses)}
+            columns={getInventoryColumns(products, warehouses, alertData)}
             title="Inventory Overview"
             searchable={true}
             filterable={true}
