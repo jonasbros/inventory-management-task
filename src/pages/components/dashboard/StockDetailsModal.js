@@ -77,15 +77,11 @@ export default function StockDetailsModal({
     <Dialog 
       open={open} 
       onClose={onClose} 
-      maxWidth={{ xs: false, md: "md" }} 
+      maxWidth="md" 
       fullWidth
-      fullScreen={{ xs: true, md: false }}
       sx={{
         '& .MuiDialog-paper': {
-          maxHeight: { xs: '100vh', md: '90vh' },
-          height: 'auto',
-          margin: { xs: 0, md: undefined },
-          borderRadius: { xs: 0, md: undefined },
+          margin: { xs: 1, lg: 3 }
         }
       }}
     >
