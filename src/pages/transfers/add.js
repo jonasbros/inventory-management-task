@@ -162,16 +162,22 @@ export default function AddTransfer() {
                   required
                 >
                   <MenuItem value="">Select source warehouse</MenuItem>
-                  {warehousesWithStock?.map((warehouse) => {
-                    const stockRecord = stock.find(s => 
-                      s.productId === parseInt(formData.productId) && s.warehouseId === warehouse.id
-                    );
-                    return (
-                      <MenuItem key={warehouse.id} value={warehouse.id}>
-                        {warehouse.name} - {warehouse.city} (Stock: {stockRecord?.quantity || 0})
-                      </MenuItem>
-                    );
-                  })}
+                  {!warehousesWithStock.length ? (
+                    <MenuItem disabled>
+                      No Warehouses with Stocks Available
+                    </MenuItem>
+                  ) : (
+                    warehousesWithStock?.map((warehouse) => {
+                      const stockRecord = stock.find(s => 
+                        s.productId === parseInt(formData.productId) && s.warehouseId === warehouse.id
+                      );
+                      return (
+                        <MenuItem key={warehouse.id} value={warehouse.id}>
+                          {warehouse.name} - {warehouse.city} (Stock: {stockRecord?.quantity || 0})
+                        </MenuItem>
+                      );
+                    })
+                  )}
                 </TextField>
               </Grid>
 
