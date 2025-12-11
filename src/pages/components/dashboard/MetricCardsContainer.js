@@ -119,12 +119,18 @@ export default function MetricCardsContainer({
       <Grid item xs={12} md={6} lg={3}>
         <MetricCard
           title="Out of Stock"
-          value={`${metrics.outOfStockCount} product(s)`}
+          value={metrics.outOfStockCount > 0 ? `${metrics.outOfStockCount} product(s)` : metrics.warehouseZeroStockCount > 0 ? `${metrics.warehouseZeroStockCount} locations` : "0 issues"}
           icon={ErrorIcon}
           iconColor="error.main"
-          valueColor={metrics.outOfStockCount > 0 ? 'error.main' : 'text.primary'}
-          subtitle={metrics.warehouseZeroStockCount > 0 ? `${metrics.warehouseZeroStockCount} warehouse locations` : "All warehouses stocked"}
-          subtitleColor={metrics.warehouseZeroStockCount > 0 ? "error.main" : "success.main"}
+          valueColor={metrics.outOfStockCount > 0 || metrics.warehouseZeroStockCount > 0 ? 'error.main' : 'text.primary'}
+          subtitle={
+            metrics.outOfStockCount > 0 
+              ? `${metrics.warehouseZeroStockCount} warehouse locations affected`
+              : metrics.warehouseZeroStockCount > 0 
+                ? "Some warehouses need restocking"
+                : "All warehouses stocked"
+          }
+          subtitleColor={metrics.outOfStockCount > 0 || metrics.warehouseZeroStockCount > 0 ? "error.main" : "success.main"}
           clickable={true}
           onClick={handleOutOfStockClick}
         />

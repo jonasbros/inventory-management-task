@@ -3,13 +3,13 @@
     "id": 1,
     "productId": 1,
     "warehouseId": 1,
-    "quantity": 60
+    "quantity": 24
   },
   {
     "id": 2,
     "productId": 1,
     "warehouseId": 2,
-    "quantity": 75
+    "quantity": 51
   },
   {
     "id": 3,
@@ -51,7 +51,7 @@
     "id": 9,
     "productId": 5,
     "warehouseId": 2,
-    "quantity": 0
+    "quantity": 20
   },
   {
     "id": 10,
@@ -104,6 +104,14 @@
     "productId": 2,
     "warehouseId": 2,
     "quantity": 1,
+    "minThreshold": 10,
+    "maxThreshold": 1000
+  },
+  {
+    "id": "gojqia1wo",
+    "productId": 1,
+    "warehouseId": 4,
+    "quantity": 25,
     "minThreshold": 10,
     "maxThreshold": 1000
   }

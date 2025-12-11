@@ -16,5 +16,14 @@
     "notes": "test",
     "createdAt": "2025-12-11T11:38:41.521Z",
     "updatedAt": "2025-12-11T11:38:41.521Z"
+  },
+  {
+    "id": "90ntaj2ps",
+    "productId": 2,
+    "alertType": "critical_low",
+    "status": "acknowledged",
+    "notes": "im working on this",
+    "createdAt": "2025-12-11T14:03:18.384Z",
+    "updatedAt": "2025-12-11T14:03:18.384Z"
   }
 ]
