@@ -1,9 +1,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Box, Typography, Paper, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 
 export default function StockLevelChart({ metrics, stock = [], products = [] }) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   // Use warehouse-level incidents to match the cards
   const outOfStockCount = metrics.outOfStockCount || 0;
   const criticalCount = metrics.criticalStockCount || 0; 
@@ -22,22 +20,22 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
     { 
       name: 'Healthy Stock', 
       value: healthyCount, 
-      color: theme.palette.success.main
+      color: '#4caf50'
     },
     { 
       name: 'Low Stock', 
       value: lowStockCount, 
-      color: theme.palette.warning.main
+      color: '#ff9800'
     },
     { 
       name: 'Critical Stock', 
       value: criticalCount, 
-      color: theme.palette.error.main
+      color: '#f44336'
     },
     { 
       name: 'Out of Stock', 
       value: outOfStockCount, 
-      color: theme.palette.error.dark
+      color: '#d32f2f'
     }
   ].filter(item => item.value > 0); // Only show categories with actual data
 
@@ -78,10 +76,10 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
   const CustomLegend = ({ payload }) => {
     return (
       <Box sx={{ 
-        mt: isMobile ? 1 : 2, 
+        mt: { xs: 1, md: 2 }, 
         display: 'flex', 
         flexWrap: 'wrap', 
-        gap: isMobile ? 1 : 2, 
+        gap: { xs: 1, md: 2 }, 
         justifyContent: 'center' 
       }}>
         {payload.map((entry, index) => (
@@ -106,8 +104,8 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
   if (totalProducts === 0) {
     return (
       <Paper elevation={2} sx={{ 
-        p: isMobile ? 2 : 3, 
-        height: isMobile ? 300 : 400, 
+        p: { xs: 2, md: 3 }, 
+        height: { xs: 300, md: 400 }, 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center' 
@@ -123,8 +121,8 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
     <Paper 
       elevation={2} 
       sx={{ 
-        p: isMobile ? 2 : 3, 
-        height: isMobile ? 300 : 400, 
+        p: { xs: 2, md: 3 }, 
+        height: { xs: 300, md: 400 }, 
         display: 'flex', 
         flexDirection: 'column',
         '& .recharts-wrapper': {
@@ -142,10 +140,10 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
       }}
     >
       <Typography 
-        variant={isMobile ? "subtitle1" : "h6"} 
+        variant={{ xs: "subtitle1", md: "h6" }} 
         gutterBottom 
         sx={{ 
-          mb: isMobile ? 1 : 2,
+          mb: { xs: 1, md: 2 },
           fontWeight: 600
         }}
       >
@@ -159,8 +157,8 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={isMobile ? 40 : 50}
-              outerRadius={isMobile ? 65 : 80}
+              innerRadius={50}
+              outerRadius={80}
               paddingAngle={2}
               dataKey="value"
               style={{ outline: 'none' }}
@@ -186,7 +184,7 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
           }}
         >
           <Typography 
-            variant={isMobile ? "h5" : "h4"} 
+            variant={{ xs: "h5", md: "h4" }} 
             fontWeight={700} 
             color="primary.main"
           >
@@ -195,7 +193,7 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
           <Typography 
             variant="caption" 
             color="text.secondary" 
-            sx={{ lineHeight: 1, fontSize: isMobile ? '0.65rem' : '0.75rem' }}
+            sx={{ lineHeight: 1, fontSize: { xs: '0.65rem', md: '0.75rem' } }}
           >
             Total Products
           </Typography>

@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, Chip, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Card, CardContent, Typography, Chip } from '@mui/material';
 
 export default function MetricCard({ 
   title, 
@@ -13,9 +13,6 @@ export default function MetricCard({
   onClick,
   clickable = false
 }) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
   return (
     <Card 
       sx={{ 

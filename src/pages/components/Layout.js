@@ -35,12 +35,15 @@ export default function Layout({ children }) {
           flexGrow: 1,
           // On mobile, drawer is overlay so no margin needed
           // On desktop, adjust margin based on drawer state
-          marginLeft: isMobile ? 0 : (isDrawerOpen ? 0 : `-${drawerWidth}px`),
+          marginLeft: { 
+            xs: 0, 
+            md: isDrawerOpen ? 0 : `-${drawerWidth}px` 
+          },
           transition: (theme) => theme.transitions.create(['margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
-          padding: isMobile ? '8px' : '16px',
+          padding: { xs: '8px', md: '16px' },
           minHeight: '100vh',
           width: 0, // Force width to be constrained by flex
           minWidth: 0, // Allow flexbox to shrink content

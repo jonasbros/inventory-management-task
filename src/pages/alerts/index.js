@@ -294,7 +294,7 @@ export default function AlertsPage() {
         <meta name="description" content="Inventory stock alerts and management for GreenSupply Co" />
       </Head>
       
-      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
+      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: { xs: 2, md: 4 } }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
             Stock Alerts
@@ -398,6 +398,11 @@ export default function AlertsPage() {
           onClose={() => !submittingAction && setActionDialogOpen(false)}
           maxWidth="sm"
           fullWidth
+          sx={{
+            '& .MuiDialog-paper': {
+              margin: { xs: 1, lg: 3 }
+            }
+          }}
         >
           <DialogTitle sx={{ pb: 2 }}>
             {actionType === 'dismissed' ? 'Snooze Alert' : actionType.charAt(0).toUpperCase() + actionType.slice(1) + ' Alert'}
@@ -461,7 +466,7 @@ export default function AlertsPage() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {selectedAlertForStock.stockByWarehouse?.map((warehouse, index) => (
                     <Paper key={index} sx={{ p: 2, border: '1px solid', borderColor: 'divider' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', flexDirection: {xs: 'column', md: 'row'}, justifyContent: 'space-between', alignItems: {xs: 'start', md: 'center'}, gap: 2 }}>
                         <Box>
                           <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                             {warehouse.warehouseName}

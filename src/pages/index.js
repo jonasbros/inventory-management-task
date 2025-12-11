@@ -6,8 +6,6 @@ import {
   Grid,
   Paper,
   Box,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
@@ -39,8 +37,6 @@ export default function Home() {
   
   const router = useRouter();
   const { showError } = useNotification();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
 
   const fetchData = async () => {
@@ -127,17 +123,17 @@ export default function Home() {
       <Container 
         maxWidth={false} 
         sx={{ 
-          mt: isMobile ? 2 : 4, 
-          mb: isMobile ? 2 : 4, 
-          px: isMobile ? 2 : 4
+          mt: { xs: 2, md: 4 }, 
+          mb: { xs: 2, md: 4 }, 
+          px: { xs: 2, md: 4 }
         }}
       >
         <Typography 
-          variant={isMobile ? "h5" : "h4"} 
+          variant={{ xs: "h5", md: "h4" }} 
           component="h1" 
           gutterBottom
           sx={{ 
-            mb: isMobile ? 2 : 3,
+            mb: { xs: 2, md: 3 },
             fontWeight: 600
           }}
         >
@@ -155,7 +151,7 @@ export default function Home() {
       />
 
       {/* Main Content Section */}
-      <Grid container spacing={isMobile ? 2 : 3} sx={{ mb: isMobile ? 2 : 4 }}>
+      <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 2, md: 4 } }}>
         {/* Left Side - Tables and Bar Chart */}
         <Grid item xs={12} lg={8}>
           {/* Inventory Overview Table */}
@@ -189,7 +185,7 @@ export default function Home() {
           <Box sx={{ 
             display: 'flex', 
             flexDirection: 'column', 
-            gap: isMobile ? 2 : 3 
+            gap: { xs: 2, md: 3 } 
           }}>
             <StockLevelChart 
               metrics={dashboardMetrics}

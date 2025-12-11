@@ -1,9 +1,8 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Box, Typography, Paper, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, Paper, useTheme } from '@mui/material';
 
 export default function WarehouseCapacityChart({ warehouseData = [] }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Debug: log the data to see what we're getting
   console.log('Warehouse Data:', warehouseData);
@@ -42,8 +41,8 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
   if (warehouseData.length === 0) {
     return (
       <Paper elevation={2} sx={{ 
-        p: isMobile ? 2 : 3, 
-        height: isMobile ? 300 : 400, 
+        p: { xs: 2, md: 3 }, 
+        height: { xs: 300, md: 400 }, 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center' 
@@ -59,8 +58,8 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
     <Paper 
       elevation={2} 
       sx={{ 
-        p: isMobile ? 2 : 3, 
-        height: isMobile ? 300 : 400, 
+        p: { xs: 2, md: 3 }, 
+        height: { xs: 300, md: 400 }, 
         display: 'flex', 
         flexDirection: 'column',
         '& .recharts-wrapper': {
@@ -75,10 +74,10 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
       }}
     >
       <Typography 
-        variant={isMobile ? "subtitle1" : "h6"} 
+        variant={{ xs: "subtitle1", md: "h6" }} 
         gutterBottom 
         sx={{ 
-          mb: isMobile ? 1 : 2,
+          mb: { xs: 1, md: 2 },
           fontWeight: 600
         }}
       >
@@ -90,24 +89,24 @@ export default function WarehouseCapacityChart({ warehouseData = [] }) {
           <BarChart
             data={warehouseData}
             margin={{
-              top: isMobile ? 10 : 20,
-              right: isMobile ? 10 : 30,
-              left: isMobile ? 10 : 20,
-              bottom: isMobile ? 40 : 60,
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 60,
             }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.grey[300]} />
             <XAxis 
               dataKey="name" 
-              tick={{ fontSize: isMobile ? 8 : 10, fill: theme.palette.text.secondary }}
+              tick={{ fontSize: 10, fill: theme.palette.text.secondary }}
               axisLine={{ stroke: theme.palette.grey[400] }}
               tickLine={{ stroke: theme.palette.grey[400] }}
               angle={-45}
               textAnchor="end"
-              height={isMobile ? 40 : 60}
+              height={60}
             />
             <YAxis 
-              tick={{ fontSize: isMobile ? 10 : 12, fill: theme.palette.text.secondary }}
+              tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
               axisLine={{ stroke: theme.palette.grey[400] }}
               tickLine={{ stroke: theme.palette.grey[400] }}
             />

@@ -17,8 +17,6 @@ import {
   MenuItem,
   Chip,
   InputAdornment,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TablePagination from './TablePagination';
@@ -48,10 +46,6 @@ export default function AppTable({
   filters = [], // Array of filter configurations
   actions = [], // Array of action button configurations
 }) {
-  // Responsive hook
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
   // State management
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilters, setActiveFilters] = useState({});
@@ -190,11 +184,11 @@ export default function AppTable({
     <Box>
       {/* Title */}
       <Typography 
-        variant={isMobile ? "subtitle1" : "h6"} 
+        variant={{ xs: "subtitle1", md: "h6" }} 
         component="h2" 
         gutterBottom
         sx={{ 
-          mb: isMobile ? 2 : 3,
+          mb: { xs: 2, md: 3 },
           fontWeight: 600
         }}
       >
@@ -203,13 +197,13 @@ export default function AppTable({
 
       {/* Search and Filters */}
       <Box sx={{ 
-        mb: isMobile ? 2 : 3, 
+        mb: { xs: 2, md: 3 }, 
         display: 'flex', 
-        gap: isMobile ? 1 : 2, 
+        gap: { xs: 1, md: 2 }, 
         flexWrap: 'wrap', 
         alignItems: 'center',
-        flexDirection: isMobile ? 'column' : 'row',
-        alignItems: isMobile ? 'stretch' : 'center'
+        flexDirection: { xs: 'column', md: 'row' },
+        alignItems: { xs: 'stretch', md: 'center' }
       }}>
         {/* Search */}
         {searchable && (
@@ -226,8 +220,8 @@ export default function AppTable({
               ),
             }}
             sx={{ 
-              minWidth: isMobile ? '100%' : 250,
-              width: isMobile ? '100%' : 'auto'
+              minWidth: { xs: '100%', md: 250 },
+              width: { xs: '100%', md: 'auto' }
             }}
           />
         )}
@@ -236,17 +230,17 @@ export default function AppTable({
         {filterable && (
           <Box sx={{ 
             display: 'flex', 
-            gap: isMobile ? 1 : 2, 
+            gap: { xs: 1, md: 2 }, 
             flexWrap: 'wrap',
-            width: isMobile ? '100%' : 'auto'
+            width: { xs: '100%', md: 'auto' }
           }}>
             {filters.map(filter => (
               <FormControl 
                 key={filter.key} 
                 size="small" 
                 sx={{ 
-                  minWidth: isMobile ? 'calc(50% - 4px)' : 150,
-                  flex: isMobile ? '1 1 calc(50% - 4px)' : '0 0 auto'
+                  minWidth: { xs: 'calc(50% - 4px)', md: 150 },
+                  flex: { xs: '1 1 calc(50% - 4px)', md: '0 0 auto' }
                 }}
               >
                 <InputLabel>{filter.label}</InputLabel>
@@ -271,7 +265,7 @@ export default function AppTable({
           display: 'flex', 
           gap: 1, 
           flexWrap: 'wrap',
-          width: isMobile ? '100%' : 'auto'
+          width: { xs: '100%', md: 'auto' }
         }}>
           {Object.entries(activeFilters).map(([key, value]) => {
             if (!value || value === 'all') return null;
@@ -298,10 +292,10 @@ export default function AppTable({
           '& .MuiTable-root': {
             minWidth: { xs: 800, md: 'auto' }
           },
-          mb: isMobile ? 1 : 2
+          mb: { xs: 1, md: 2 }
         }}
       >
-        <Table size={isMobile ? "small" : size} stickyHeader={stickyHeader}>
+        <Table size="small" stickyHeader={stickyHeader}>
           <TableHead>
             <TableRow>
               {columns.map((column) => (

@@ -102,8 +102,15 @@ export default function Warehouses() {
         <meta name="description" content="Manage warehouse locations across North America" />
       </Head>
       
-      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: { xs: 2, lg: 4 } }}>
+        <Box sx={{
+          display: 'flex', 
+          flexDirection: {xs: 'column', sm: 'row'}, 
+          justifyContent: 'space-between', 
+          alignItems: {xs: 'start', sm: 'center'}, 
+          mb: 3,
+          gap: 1,
+        }}>
           <Typography variant="h4" component="h1">
             Warehouses
           </Typography>
@@ -132,7 +139,15 @@ export default function Warehouses() {
           emptyMessage="No warehouses available."
         />
 
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog 
+          open={open} 
+          onClose={handleClose}
+          sx={{
+            '& .MuiDialog-paper': {
+              margin: { xs: 1, lg: 3 }
+            }
+          }}
+        >
           <DialogTitle>Delete Warehouse</DialogTitle>
           <DialogContent>
             <DialogContentText>

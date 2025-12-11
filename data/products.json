@@ -38,13 +38,5 @@
     "category": "Cups",
     "unitCost": 0.6,
     "reorderPoint": 600
-  },
-  {
-    "sku": "SKU-test",
-    "name": "test",
-    "category": "test",
-    "unitCost": 10,
-    "reorderPoint": 100,
-    "id": 6
   }
 ]

@@ -132,8 +132,8 @@ export default function EditProduct() {
 
   return (
     <>
-      <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
+      <Container maxWidth="sm" sx={{ mt: 4, mb: 4, px: { xs: 0, md: 4 } }}>
+        <Paper elevation={3} sx={{ p: { xs: 2, md: 4 } }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Edit Product
           </Typography>

@@ -138,8 +138,15 @@ export default function Stock() {
         <meta name="description" content="Monitor and manage inventory stock levels across all warehouses" />
       </Head>
       
-      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: { xs: 2, md: 4 } }}>
+        <Box sx={{
+          display: 'flex', 
+          flexDirection: {xs: 'column', sm: 'row'}, 
+          justifyContent: 'space-between', 
+          alignItems: {xs: 'start', sm: 'center'}, 
+          mb: 3,
+          gap: 1,
+        }}>
           <Typography variant="h4" component="h1">
             Stock Levels
           </Typography>
@@ -174,7 +181,15 @@ export default function Stock() {
           emptyMessage="No stock records available."
         />
 
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog 
+          open={open} 
+          onClose={handleClose}
+          sx={{
+            '& .MuiDialog-paper': {
+              margin: { xs: 1, lg: 3 }
+            }
+          }}
+        >
           <DialogTitle>Delete Stock Record</DialogTitle>
           <DialogContent>
             <DialogContentText>

@@ -1,19 +1,17 @@
-import { AppBar, Toolbar, Typography, IconButton, useTheme, useMediaQuery } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 
 export default function AppBarComponent({ onMenuClick, isDrawerOpen }) {
   const drawerWidth = 240;
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <AppBar 
       position="fixed" 
       sx={{ 
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        marginLeft: (isDrawerOpen && !isMobile) ? `${drawerWidth}px` : 0,
-        width: (isDrawerOpen && !isMobile) ? `calc(100% - ${drawerWidth}px)` : '100%',
+        marginLeft: { xs: 0, md: isDrawerOpen ? `${drawerWidth}px` : 0 },
+        width: { xs: '100%', md: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%' },
         transition: (theme) => theme.transitions.create(['width', 'margin'], {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.leavingScreen,
@@ -36,16 +34,21 @@ export default function AppBarComponent({ onMenuClick, isDrawerOpen }) {
           fontSize: '1.5rem'
         }} />
         <Typography 
-          variant={isMobile ? "subtitle1" : "h6"} 
+          variant={{ xs: "subtitle1", md: "h6" }} 
           noWrap 
           component="div"
           sx={{ 
-            fontSize: isMobile ? '1rem' : '1.25rem',
+            fontSize: { xs: '1rem', md: '1.25rem' },
             flexGrow: 1,
             fontWeight: 600
           }}
         >
-          {isMobile ? "GreenSupply Co" : "GreenSupply Co - Inventory Management"}
+          <Box component="span" sx={{ display: { xs: "none", md: "inline" } }}>
+            GreenSupply Co - Inventory Management
+          </Box>
+          <Box component="span" sx={{ display: { xs: "inline", md: "none" } }}>
+            GreenSupply Co
+          </Box>
         </Typography>
       </Toolbar>
     </AppBar>

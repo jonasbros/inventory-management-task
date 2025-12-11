@@ -29,17 +29,24 @@ export default function TablePagination({
   return (
     <Box sx={{ 
       display: 'flex', 
-      alignItems: 'center', 
+      alignItems: { xs: 'flex-start', md: 'center' }, 
       justifyContent: 'space-between',
-      p: 2,
+      flexDirection: { xs: 'column', md: 'row' },
+      p: { xs: 1.5, md: 2 },
       borderTop: '1px solid',
       borderColor: 'divider',
       flexWrap: 'wrap',
-      gap: 2
+      gap: { xs: 1.5, md: 2 }
     }}>
       {/* Items per page selector */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <FormControl size="small" sx={{ minWidth: 80 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: { xs: 1, md: 2 },
+        width: { xs: '100%', md: 'auto' },
+        justifyContent: { xs: 'space-between', md: 'flex-start' }
+      }}>
+        <FormControl size="small" sx={{ minWidth: { xs: 70, md: 80 } }}>
           <InputLabel>Rows</InputLabel>
           <Select
             value={pageSize}
@@ -54,14 +61,32 @@ export default function TablePagination({
           </Select>
         </FormControl>
         
-        <Typography variant="body2" color="text.secondary">
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+        >
           {startItem}-{endItem} of {totalItems} items
         </Typography>
       </Box>
 
       {/* Pagination controls */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: { xs: 0.5, md: 1 },
+        width: { xs: '100%', md: 'auto' },
+        justifyContent: { xs: 'center', md: 'flex-start' }
+      }}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          sx={{ 
+            mr: 2, 
+            fontSize: '0.75rem',
+            display: { xs: 'none', md: 'block' }
+          }}
+        >
           Page {page + 1} of {totalPages}
         </Typography>
         
@@ -70,7 +95,7 @@ export default function TablePagination({
           disabled={page === 0}
           size="small"
         >
-          <FirstPage />
+          <FirstPage sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} />
         </IconButton>
         
         <IconButton 
@@ -78,15 +103,28 @@ export default function TablePagination({
           disabled={page === 0}
           size="small"
         >
-          <NavigateBefore />
+          <NavigateBefore sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} />
         </IconButton>
+        
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          sx={{ 
+            mx: 1, 
+            fontSize: '0.75rem', 
+            minWidth: 'fit-content',
+            display: { xs: 'block', md: 'none' }
+          }}
+        >
+          {page + 1}/{totalPages}
+        </Typography>
         
         <IconButton 
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages - 1}
           size="small"
         >
-          <NavigateNext />
+          <NavigateNext sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} />
         </IconButton>
         
         <IconButton 
@@ -94,7 +132,7 @@ export default function TablePagination({
           disabled={page >= totalPages - 1}
           size="small"
         >
-          <LastPage />
+          <LastPage sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} />
         </IconButton>
       </Box>
     </Box>

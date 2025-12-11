@@ -119,12 +119,12 @@ export default function AddTransfer() {
         <meta name="description" content="Transfer inventory between warehouses" />
       </Head>
 
-      <Container sx={{ mt: 4, mb: 4 }}>
+      <Container sx={{ mt: 4, mb: 4, px: { xs: 2, md: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Create Stock Transfer
         </Typography>
 
-        <Paper elevation={3} sx={{ p: 4, mt: 3 }}>
+        <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, mt: 3 }}>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>

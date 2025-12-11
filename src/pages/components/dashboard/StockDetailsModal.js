@@ -8,8 +8,6 @@ import {
   Typography,
   Box,
   TablePagination,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -27,8 +25,6 @@ export default function StockDetailsModal({
   onRestock
 }) {
   const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -81,24 +77,24 @@ export default function StockDetailsModal({
     <Dialog 
       open={open} 
       onClose={onClose} 
-      maxWidth={isMobile ? false : "md"} 
+      maxWidth={{ xs: false, md: "md" }} 
       fullWidth
-      fullScreen={isMobile}
+      fullScreen={{ xs: true, md: false }}
       sx={{
         '& .MuiDialog-paper': {
-          maxHeight: isMobile ? '100vh' : '90vh',
+          maxHeight: { xs: '100vh', md: '90vh' },
           height: 'auto',
-          margin: isMobile ? 0 : undefined,
-          borderRadius: isMobile ? 0 : undefined,
+          margin: { xs: 0, md: undefined },
+          borderRadius: { xs: 0, md: undefined },
         }
       }}
     >
-      <DialogTitle sx={{ pb: isMobile ? 1 : 2 }}>
+      <DialogTitle sx={{ pb: { xs: 1, md: 2 } }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography 
-            variant={isMobile ? "subtitle1" : "h6"}
+            variant={{ xs: "subtitle1", md: "h6" }}
             sx={{ 
-              fontSize: isMobile ? '1.1rem' : undefined,
+              fontSize: { xs: '1.1rem', md: undefined },
               fontWeight: 600
             }}
           >
@@ -110,18 +106,18 @@ export default function StockDetailsModal({
         </Box>
       </DialogTitle>
       
-      <DialogContent sx={{ p: isMobile ? 1 : 2, overflow: 'hidden' }}>
+      <DialogContent sx={{ p: { xs: 1, md: 2 }, overflow: 'hidden' }}>
         <TableContainer 
           component={Paper} 
           variant="outlined"
           sx={{ 
-            maxHeight: isMobile ? '70vh' : '60vh',
+            maxHeight: { xs: '70vh', md: '60vh' },
             overflow: 'auto',
             '& .MuiTable-root': {
               '& .MuiTableCell-root': {
-                padding: isMobile ? '8px 12px' : '12px 16px',
-                whiteSpace: isMobile ? 'normal' : 'nowrap',
-                fontSize: isMobile ? '0.875rem' : undefined
+                padding: { xs: '8px 12px', md: '12px 16px' },
+                whiteSpace: { xs: 'normal', md: 'nowrap' },
+                fontSize: { xs: '0.875rem', md: undefined }
               },
               '& .MuiTableCell-head': {
                 fontWeight: 600,
