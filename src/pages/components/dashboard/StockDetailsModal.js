@@ -8,6 +8,8 @@ import {
   Typography,
   Box,
   TablePagination,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -25,6 +27,8 @@ export default function StockDetailsModal({
   onRestock
 }) {
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -77,35 +81,47 @@ export default function StockDetailsModal({
     <Dialog 
       open={open} 
       onClose={onClose} 
-      maxWidth="md" 
+      maxWidth={isMobile ? false : "md"} 
       fullWidth
+      fullScreen={isMobile}
       sx={{
         '& .MuiDialog-paper': {
-          maxHeight: '90vh',
+          maxHeight: isMobile ? '100vh' : '90vh',
           height: 'auto',
+          margin: isMobile ? 0 : undefined,
+          borderRadius: isMobile ? 0 : undefined,
         }
       }}
     >
-      <DialogTitle>
+      <DialogTitle sx={{ pb: isMobile ? 1 : 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">{title}</Typography>
+          <Typography 
+            variant={isMobile ? "subtitle1" : "h6"}
+            sx={{ 
+              fontSize: isMobile ? '1.1rem' : undefined,
+              fontWeight: 600
+            }}
+          >
+            {title}
+          </Typography>
           <IconButton onClick={onClose} size="small">
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
       
-      <DialogContent sx={{ p: 2, overflow: 'hidden' }}>
+      <DialogContent sx={{ p: isMobile ? 1 : 2, overflow: 'hidden' }}>
         <TableContainer 
           component={Paper} 
           variant="outlined"
           sx={{ 
-            maxHeight: '60vh',
+            maxHeight: isMobile ? '70vh' : '60vh',
             overflow: 'auto',
             '& .MuiTable-root': {
               '& .MuiTableCell-root': {
-                padding: '12px 16px',
-                whiteSpace: 'nowrap'
+                padding: isMobile ? '8px 12px' : '12px 16px',
+                whiteSpace: isMobile ? 'normal' : 'nowrap',
+                fontSize: isMobile ? '0.875rem' : undefined
               },
               '& .MuiTableCell-head': {
                 fontWeight: 600,

@@ -10,6 +10,8 @@ import {
   Paper,
   CircularProgress,
   Alert,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { useNotification } from '../../contexts/NotificationContext';
 

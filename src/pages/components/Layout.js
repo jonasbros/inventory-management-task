@@ -40,6 +40,11 @@ export default function Layout({ children }) {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
+          padding: isMobile ? '8px' : '16px',
+          minHeight: '100vh',
+          width: 0, // Force width to be constrained by flex
+          minWidth: 0, // Allow flexbox to shrink content
+          overflow: 'hidden', // Prevent horizontal overflow
         }}
       >
         <Toolbar />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Grid, Chip, Tooltip } from '@mui/material';
+import { Grid, Chip, Tooltip, Box, useMediaQuery } from '@mui/material';
 import MetricCard from './MetricCard';
 import StockDetailsModal from './StockDetailsModal';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -58,7 +58,7 @@ export default function MetricCardsContainer({
   return (
     <>
     <Grid container spacing={3} sx={{ mb: 4 }}>
-      <Grid item xs={12} sm={6} md={3}>
+      <Grid item xs={12} md={3}>
         <MetricCard
           title="Total Products"
           value={products.length}
@@ -69,7 +69,7 @@ export default function MetricCardsContainer({
         />
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
+      <Grid item xs={12} md={3}>
         <MetricCard
           title="Inventory Value"
           value={`$${totalValue.toLocaleString()}`}
@@ -81,7 +81,7 @@ export default function MetricCardsContainer({
         />
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
+      <Grid item xs={12} md={3}>
         <MetricCard
           title="Stock Alerts"
           value={`${alertData?.alertSummary?.totalAlerts || 0} active`}
@@ -115,7 +115,7 @@ export default function MetricCardsContainer({
         />
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
+      <Grid item xs={12} md={3}>
         <MetricCard
           title="Out of Stock"
           value={`${metrics.outOfStockCount} product(s)`}

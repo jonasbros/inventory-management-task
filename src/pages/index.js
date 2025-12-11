@@ -6,6 +6,8 @@ import {
   Grid,
   Paper,
   Box,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import MetricCardsContainer from './components/dashboard/MetricCardsContainer';
@@ -37,6 +39,8 @@ export default function Home() {
   
   const router = useRouter();
   const { showError } = useNotification();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
 
   const fetchData = async () => {
@@ -120,8 +124,23 @@ export default function Home() {
         <meta name="description" content="Inventory management dashboard for GreenSupply Co warehouse operations" />
       </Head>
       
-      <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+      <Container 
+        maxWidth={false} 
+        sx={{ 
+          mt: isMobile ? 2 : 4, 
+          mb: isMobile ? 2 : 4, 
+          px: isMobile ? 2 : 4
+        }}
+      >
+        <Typography 
+          variant={isMobile ? "h5" : "h4"} 
+          component="h1" 
+          gutterBottom
+          sx={{ 
+            mb: isMobile ? 2 : 3,
+            fontWeight: 600
+          }}
+        >
           Dashboard
         </Typography>
 
@@ -136,7 +155,7 @@ export default function Home() {
       />
 
       {/* Main Content Section */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={isMobile ? 2 : 3} sx={{ mb: isMobile ? 2 : 4 }}>
         {/* Left Side - Tables and Bar Chart */}
         <Grid item xs={12} lg={8}>
           {/* Inventory Overview Table */}
@@ -167,7 +186,11 @@ export default function Home() {
 
         {/* Right Side - Pie Charts */}
         <Grid item xs={12} lg={4}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: isMobile ? 2 : 3 
+          }}>
             <StockLevelChart 
               metrics={dashboardMetrics}
               stock={stock}

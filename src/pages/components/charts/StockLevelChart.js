@@ -1,8 +1,9 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Box, Typography, Paper, useTheme } from '@mui/material';
+import { Box, Typography, Paper, useTheme, useMediaQuery } from '@mui/material';
 
 export default function StockLevelChart({ metrics, stock = [], products = [] }) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   // Use warehouse-level incidents to match the cards
   const outOfStockCount = metrics.outOfStockCount || 0;
   const criticalCount = metrics.criticalStockCount || 0; 
@@ -76,7 +77,13 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
 
   const CustomLegend = ({ payload }) => {
     return (
-      <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+      <Box sx={{ 
+        mt: isMobile ? 1 : 2, 
+        display: 'flex', 
+        flexWrap: 'wrap', 
+        gap: isMobile ? 1 : 2, 
+        justifyContent: 'center' 
+      }}>
         {payload.map((entry, index) => (
           <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box 
@@ -98,7 +105,13 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
 
   if (totalProducts === 0) {
     return (
-      <Paper elevation={2} sx={{ p: 3, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Paper elevation={2} sx={{ 
+        p: isMobile ? 2 : 3, 
+        height: isMobile ? 300 : 400, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
         <Typography variant="body2" color="text.secondary">
           No inventory data available
         </Typography>
@@ -110,8 +123,8 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
     <Paper 
       elevation={2} 
       sx={{ 
-        p: 3, 
-        height: 400, 
+        p: isMobile ? 2 : 3, 
+        height: isMobile ? 300 : 400, 
         display: 'flex', 
         flexDirection: 'column',
         '& .recharts-wrapper': {
@@ -128,7 +141,14 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
         }
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+      <Typography 
+        variant={isMobile ? "subtitle1" : "h6"} 
+        gutterBottom 
+        sx={{ 
+          mb: isMobile ? 1 : 2,
+          fontWeight: 600
+        }}
+      >
         Stock Level Distribution
       </Typography>
       
@@ -139,8 +159,8 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={80}
+              innerRadius={isMobile ? 40 : 50}
+              outerRadius={isMobile ? 65 : 80}
               paddingAngle={2}
               dataKey="value"
               style={{ outline: 'none' }}
@@ -165,10 +185,18 @@ export default function StockLevelChart({ metrics, stock = [], products = [] }) 
             zIndex: 1
           }}
         >
-          <Typography variant="h4" fontWeight={700} color="primary.main">
+          <Typography 
+            variant={isMobile ? "h5" : "h4"} 
+            fontWeight={700} 
+            color="primary.main"
+          >
             {totalProducts}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
+          <Typography 
+            variant="caption" 
+            color="text.secondary" 
+            sx={{ lineHeight: 1, fontSize: isMobile ? '0.65rem' : '0.75rem' }}
+          >
             Total Products
           </Typography>
         </Box>

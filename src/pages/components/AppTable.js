@@ -17,6 +17,8 @@ import {
   MenuItem,
   Chip,
   InputAdornment,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TablePagination from './TablePagination';
@@ -46,6 +48,10 @@ export default function AppTable({
   filters = [], // Array of filter configurations
   actions = [], // Array of action button configurations
 }) {
+  // Responsive hook
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
   // State management
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilters, setActiveFilters] = useState({});
@@ -183,12 +189,28 @@ export default function AppTable({
   return (
     <Box>
       {/* Title */}
-      <Typography variant="h6" component="h2" gutterBottom>
+      <Typography 
+        variant={isMobile ? "subtitle1" : "h6"} 
+        component="h2" 
+        gutterBottom
+        sx={{ 
+          mb: isMobile ? 2 : 3,
+          fontWeight: 600
+        }}
+      >
         {title}
       </Typography>
 
       {/* Search and Filters */}
-      <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+      <Box sx={{ 
+        mb: isMobile ? 2 : 3, 
+        display: 'flex', 
+        gap: isMobile ? 1 : 2, 
+        flexWrap: 'wrap', 
+        alignItems: 'center',
+        flexDirection: isMobile ? 'column' : 'row',
+        alignItems: isMobile ? 'stretch' : 'center'
+      }}>
         {/* Search */}
         {searchable && (
           <TextField
@@ -203,30 +225,54 @@ export default function AppTable({
                 </InputAdornment>
               ),
             }}
-            sx={{ minWidth: 250 }}
+            sx={{ 
+              minWidth: isMobile ? '100%' : 250,
+              width: isMobile ? '100%' : 'auto'
+            }}
           />
         )}
 
         {/* Filters */}
-        {filterable && filters.map(filter => (
-          <FormControl key={filter.key} size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>{filter.label}</InputLabel>
-            <Select
-              value={activeFilters[filter.key] || 'all'}
-              label={filter.label}
-              onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-            >
-              {getFilterOptions(filter).map(option => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ))}
+        {filterable && (
+          <Box sx={{ 
+            display: 'flex', 
+            gap: isMobile ? 1 : 2, 
+            flexWrap: 'wrap',
+            width: isMobile ? '100%' : 'auto'
+          }}>
+            {filters.map(filter => (
+              <FormControl 
+                key={filter.key} 
+                size="small" 
+                sx={{ 
+                  minWidth: isMobile ? 'calc(50% - 4px)' : 150,
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : '0 0 auto'
+                }}
+              >
+                <InputLabel>{filter.label}</InputLabel>
+                <Select
+                  value={activeFilters[filter.key] || 'all'}
+                  label={filter.label}
+                  onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                >
+                  {getFilterOptions(filter).map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ))}
+          </Box>
+        )}
 
         {/* Active filter chips */}
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 1, 
+          flexWrap: 'wrap',
+          width: isMobile ? '100%' : 'auto'
+        }}>
           {Object.entries(activeFilters).map(([key, value]) => {
             if (!value || value === 'all') return null;
             const filter = filters.find(f => f.key === key);
@@ -251,10 +297,11 @@ export default function AppTable({
           overflowX: 'auto',
           '& .MuiTable-root': {
             minWidth: { xs: 800, md: 'auto' }
-          }
+          },
+          mb: isMobile ? 1 : 2
         }}
       >
-        <Table size={size} stickyHeader={stickyHeader}>
+        <Table size={isMobile ? "small" : size} stickyHeader={stickyHeader}>
           <TableHead>
             <TableRow>
               {columns.map((column) => (

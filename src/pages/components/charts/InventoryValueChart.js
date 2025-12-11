@@ -1,8 +1,9 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Box, Typography, Paper, useTheme } from '@mui/material';
+import { Box, Typography, Paper, useTheme, useMediaQuery } from '@mui/material';
 
 export default function InventoryValueChart({ valueByCategory = [], totalValue = 0 }) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Create chart data with lighter theme colors for better text contrast
   const chartColors = [
@@ -56,7 +57,13 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
 
   const CustomLegend = ({ payload }) => {
     return (
-      <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center' }}>
+      <Box sx={{ 
+        mt: isMobile ? 1 : 2, 
+        display: 'flex', 
+        flexWrap: 'wrap', 
+        gap: isMobile ? 1 : 1.5, 
+        justifyContent: 'center' 
+      }}>
         {payload.map((entry, index) => (
           <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Box 
@@ -78,7 +85,13 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
 
   if (data.length === 0 || totalValue === 0) {
     return (
-      <Paper elevation={2} sx={{ p: 3, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Paper elevation={2} sx={{ 
+        p: isMobile ? 2 : 3, 
+        height: isMobile ? 300 : 400, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
         <Typography variant="body2" color="text.secondary">
           No inventory value data available
         </Typography>
@@ -90,8 +103,8 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
     <Paper 
       elevation={2} 
       sx={{ 
-        p: 3, 
-        height: 400, 
+        p: isMobile ? 2 : 3, 
+        height: isMobile ? 300 : 400, 
         display: 'flex', 
         flexDirection: 'column',
         '& .recharts-wrapper': {
@@ -108,7 +121,14 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
         }
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+      <Typography 
+        variant={isMobile ? "subtitle1" : "h6"} 
+        gutterBottom 
+        sx={{ 
+          mb: isMobile ? 1 : 2,
+          fontWeight: 600
+        }}
+      >
         Inventory Value by Category
       </Typography>
       
@@ -119,7 +139,7 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
               data={data}
               cx="50%"
               cy="50%"
-              outerRadius={80}
+              outerRadius={isMobile ? 65 : 80}
               paddingAngle={2}
               dataKey="value"
               style={{ outline: 'none' }}
@@ -144,10 +164,18 @@ export default function InventoryValueChart({ valueByCategory = [], totalValue =
             zIndex: 1
           }}
         >
-          <Typography variant="h5" fontWeight={700} color="text.primary">
+          <Typography 
+            variant={isMobile ? "h6" : "h5"} 
+            fontWeight={700} 
+            color="text.primary"
+          >
             ${totalValue.toLocaleString()}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
+          <Typography 
+            variant="caption" 
+            color="text.secondary" 
+            sx={{ lineHeight: 1, fontSize: isMobile ? '0.65rem' : '0.75rem' }}
+          >
             Total Value
           </Typography>
         </Box>
