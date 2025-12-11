@@ -182,19 +182,6 @@ export default function AppTable({
 
   return (
     <Box>
-      {/* Title */}
-      <Typography 
-        variant={{ xs: "subtitle1", md: "h6" }} 
-        component="h2" 
-        gutterBottom
-        sx={{ 
-          mb: { xs: 2, md: 3 },
-          fontWeight: 600
-        }}
-      >
-        {title}
-      </Typography>
-
       {/* Search and Filters */}
       <Box sx={{ 
         mb: { xs: 2, md: 3 }, 
