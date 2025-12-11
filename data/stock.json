@@ -3,19 +3,19 @@
     "id": 1,
     "productId": 1,
     "warehouseId": 1,
-    "quantity": 25
+    "quantity": 35
   },
   {
     "id": 2,
     "productId": 1,
     "warehouseId": 2,
-    "quantity": 25
+    "quantity": 100
   },
   {
     "id": 3,
     "productId": 2,
     "warehouseId": 1,
-    "quantity": 600
+    "quantity": 599
   },
   {
     "id": 4,
@@ -96,6 +96,14 @@
     "productId": 6,
     "warehouseId": 1,
     "quantity": 12,
+    "minThreshold": 10,
+    "maxThreshold": 1000
+  },
+  {
+    "id": "drpaxezcw",
+    "productId": 2,
+    "warehouseId": 2,
+    "quantity": 1,
     "minThreshold": 10,
     "maxThreshold": 1000
   }

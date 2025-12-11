@@ -17,7 +17,8 @@ export default function MetricCardsContainer({
   stock, 
   totalValue, 
   inventoryOverview,
-  alertData
+  alertData,
+  dashboardMetrics
 }) {
   const metrics = useDashboardMetrics(products, warehouses, stock, inventoryOverview);
   const [modalOpen, setModalOpen] = useState(false);
@@ -84,20 +85,20 @@ export default function MetricCardsContainer({
       <Grid item xs={12} md={6} lg={3}>
         <MetricCard
           title="Stock Alerts"
-          value={`${alertData?.alertSummary?.totalAlerts || 0} active`}
+          value={`${(dashboardMetrics?.lowStockCount || 0) + (dashboardMetrics?.criticalStockCount || 0)} active`}
           icon={NotificationsActiveIcon}
-          iconColor={alertData?.criticalCount > 0 ? "error.main" : alertData?.lowStockCount > 0 ? "warning.main" : "success.main"}
-          valueColor={alertData?.criticalCount > 0 ? 'error.main' : alertData?.lowStockCount > 0 ? 'warning.main' : 'success.main'}
+          iconColor={dashboardMetrics?.criticalStockCount > 0 ? "error.main" : dashboardMetrics?.lowStockCount > 0 ? "warning.main" : "success.main"}
+          valueColor={dashboardMetrics?.criticalStockCount > 0 ? 'error.main' : dashboardMetrics?.lowStockCount > 0 ? 'warning.main' : 'success.main'}
           subtitle={
-            alertData?.criticalCount > 0 
-              ? `${alertData.criticalCount} critical alerts` 
-              : alertData?.lowStockCount > 0 
-                ? `${alertData.lowStockCount} low stock alerts`
-                : "All inventory healthy"
+            dashboardMetrics?.criticalStockCount > 0 
+              ? `${dashboardMetrics.criticalStockCount} critical warehouses` 
+              : dashboardMetrics?.lowStockCount > 0 
+                ? `${dashboardMetrics.lowStockCount} low stock warehouses`
+                : "All warehouses healthy"
           }
           subtitleColor={
-            alertData?.criticalCount > 0 ? "error.main" 
-            : alertData?.lowStockCount > 0 ? "warning.main" 
+            dashboardMetrics?.criticalStockCount > 0 ? "error.main" 
+            : dashboardMetrics?.lowStockCount > 0 ? "warning.main" 
             : "success.main"
           }
           clickable={true}
@@ -105,9 +106,9 @@ export default function MetricCardsContainer({
           chip={
             <Tooltip title="Critical alerts require immediate attention - products below 50% of reorder point or out of stock">
               <Chip 
-                label={`${alertData?.criticalCount || 0} critical`} 
+                label={`${dashboardMetrics?.criticalStockCount || 0} critical`} 
                 size="small" 
-                color={alertData?.criticalCount > 0 ? "error" : "default"}
+                color={dashboardMetrics?.criticalStockCount > 0 ? "error" : "default"}
                 variant="outlined"
               />
             </Tooltip>

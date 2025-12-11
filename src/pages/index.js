@@ -148,6 +148,7 @@ export default function Home() {
         totalValue={totalValue}
         inventoryOverview={inventoryOverview}
         alertData={alertData}
+        dashboardMetrics={dashboardMetrics}
       />
 
       {/* Main Content Section */}

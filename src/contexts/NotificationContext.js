@@ -112,7 +112,8 @@ export function NotificationProvider({ children }) {
             sx={{ 
               width: '100%',
               minWidth: '300px',
-              maxWidth: '500px'
+              maxWidth: '500px',
+              color: 'white',
             }}
           >
             {notification.message}

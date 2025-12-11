@@ -42,5 +42,16 @@
     "status": "completed",
     "createdAt": "2025-12-11T05:57:51.939Z",
     "completedAt": "2025-12-11T05:57:51.939Z"
+  },
+  {
+    "id": "t9pl38vbb",
+    "productId": 2,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 2,
+    "quantity": 1,
+    "notes": "test",
+    "status": "completed",
+    "createdAt": "2025-12-11T06:06:48.629Z",
+    "completedAt": "2025-12-11T06:06:48.629Z"
   }
 ]
