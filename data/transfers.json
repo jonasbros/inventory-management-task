@@ -53,5 +53,16 @@
     "status": "completed",
     "createdAt": "2025-12-11T06:06:48.629Z",
     "completedAt": "2025-12-11T06:06:48.629Z"
+  },
+  {
+    "id": "jm0rkl1sq",
+    "productId": 1,
+    "fromWarehouseId": 2,
+    "toWarehouseId": 1,
+    "quantity": 25,
+    "notes": "test",
+    "status": "completed",
+    "createdAt": "2025-12-11T11:38:18.170Z",
+    "completedAt": "2025-12-11T11:38:18.170Z"
   }
 ]

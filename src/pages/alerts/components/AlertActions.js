@@ -8,22 +8,25 @@ import {
 export const getActionButtons = (alert, stock, products, handleAlertAction) => {
   const actions = [];
 
-  if (!alert.isAcknowledged && !alert.isDismissed) {
-    actions.push({
-      label: 'Acknowledge',
-      icon: CheckCircleIcon,
-      color: 'success',
-      onClick: () => handleAlertAction(alert, 'acknowledged')
-    });
-  }
+  // Only show acknowledge/snooze for actual alerts (not adequate items)
+  if (alert.severity !== 'adequate') {
+    if (!alert.isAcknowledged && !alert.isDismissed) {
+      actions.push({
+        label: 'Acknowledge',
+        icon: CheckCircleIcon,
+        color: 'success',
+        onClick: () => handleAlertAction(alert, 'acknowledged')
+      });
+    }
 
-  if (!alert.isDismissed) {
-    actions.push({
-      label: 'Snooze',
-      icon: CancelIcon,
-      color: 'default',
-      onClick: () => handleAlertAction(alert, 'dismissed')
-    });
+    if (!alert.isDismissed) {
+      actions.push({
+        label: 'Snooze',
+        icon: CancelIcon,
+        color: 'default',
+        onClick: () => handleAlertAction(alert, 'dismissed')
+      });
+    }
   }
 
   // Check if any warehouse needs action

@@ -1,58 +1,20 @@
 [
   {
-    "id": "z415zytxj",
+    "id": "9yt2y6u06",
     "productId": 1,
-    "alertType": "low_stock",
-    "status": "resolved",
+    "alertType": "critical_low",
+    "status": "acknowledged",
     "notes": "test",
-    "createdAt": "2025-12-10T18:52:15.356Z",
-    "updatedAt": "2025-12-10T18:52:32.226Z"
+    "createdAt": "2025-12-11T11:37:22.601Z",
+    "updatedAt": "2025-12-11T11:37:22.601Z"
   },
   {
-    "id": "okvwhtowp",
-    "productId": 1,
-    "alertType": "low_stock",
-    "status": "resolved",
-    "notes": "test",
-    "createdAt": "2025-12-10T18:52:42.829Z",
-    "updatedAt": "2025-12-10T18:52:42.829Z"
-  },
-  {
-    "id": "y98whzwz3",
-    "productId": 1,
-    "alertType": "low_stock",
-    "status": "resolved",
-    "notes": "test",
-    "createdAt": "2025-12-10T18:52:45.415Z",
-    "updatedAt": "2025-12-10T18:52:50.840Z",
-    "dismissedUntil": "2025-12-17T18:52:47.909Z"
-  },
-  {
-    "id": "5adiuno8d",
+    "id": "vncldhnj3",
     "productId": 1,
     "alertType": "low_stock",
     "status": "acknowledged",
     "notes": "test",
-    "createdAt": "2025-12-10T19:15:09.800Z",
-    "updatedAt": "2025-12-10T19:15:09.800Z"
-  },
-  {
-    "id": "8b48c5i4p",
-    "productId": 5,
-    "alertType": "out_of_stock",
-    "status": "resolved",
-    "notes": "",
-    "createdAt": "2025-12-10T19:27:11.022Z",
-    "updatedAt": "2025-12-10T19:27:19.436Z",
-    "dismissedUntil": "2025-12-17T19:27:11.015Z"
-  },
-  {
-    "id": "n9bgslbra",
-    "productId": 5,
-    "alertType": "out_of_stock",
-    "status": "resolved",
-    "notes": "",
-    "createdAt": "2025-12-10T19:27:53.178Z",
-    "updatedAt": "2025-12-10T19:27:53.178Z"
+    "createdAt": "2025-12-11T11:38:41.521Z",
+    "updatedAt": "2025-12-11T11:38:41.521Z"
   }
 ]

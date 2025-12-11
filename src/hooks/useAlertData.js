@@ -31,27 +31,32 @@ export function useAlertData(products, stock, warehouses, alertActions = []) {
       const productStock = stock.filter(s => s.productId === product.id);
       const totalQuantity = productStock.reduce((sum, s) => sum + s.quantity, 0);
       
-      // Determine alert severity based on business rules
+      // Determine alert severity based on WORST warehouse situation
       let severity = 'adequate';
       let alertType = null;
       let recommendedAction = null;
       let reorderQuantity = 0;
 
-      if (totalQuantity === 0) {
+      // Check each warehouse for critical situations
+      const hasOutOfStock = productStock.some(s => s.quantity === 0);
+      const hasCriticalLow = productStock.some(s => s.quantity < product.reorderPoint * 0.5);
+      const hasLowStock = productStock.some(s => s.quantity < product.reorderPoint);
+
+      if (hasOutOfStock) {
         severity = 'critical';
         alertType = 'out_of_stock';
-        recommendedAction = `Urgent: Reorder ${product.reorderPoint * 2} units immediately`;
+        recommendedAction = `Urgent: Some warehouses out of stock - reorder ${product.reorderPoint * 2} units`;
         reorderQuantity = product.reorderPoint * 2;
-      } else if (totalQuantity < product.reorderPoint * 0.5) {
+      } else if (hasCriticalLow) {
         severity = 'critical'; 
         alertType = 'critical_low';
-        recommendedAction = `Critical: Reorder ${product.reorderPoint * 1.5} units`;
+        recommendedAction = `Critical: Some warehouses critically low - reorder ${product.reorderPoint * 1.5} units`;
         reorderQuantity = Math.ceil(product.reorderPoint * 1.5);
-      } else if (totalQuantity < product.reorderPoint) {
+      } else if (hasLowStock) {
         severity = 'low';
         alertType = 'low_stock';
-        recommendedAction = `Reorder ${product.reorderPoint - totalQuantity + 50} units`;
-        reorderQuantity = product.reorderPoint - totalQuantity + 50;
+        recommendedAction = `Low stock in some warehouses - reorder ${product.reorderPoint} units`;
+        reorderQuantity = product.reorderPoint;
       } else if (totalQuantity > product.reorderPoint * 3) {
         severity = 'overstocked';
         alertType = 'overstocked';
